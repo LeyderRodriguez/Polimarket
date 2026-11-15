@@ -17,6 +17,17 @@ Cada pantalla debe consumir la API de verdad y mostrar los errores del servidor.
 - **Empieza por [docs/guides/clients.md](../docs/guides/clients.md)**: cómo levantar el backend, el proxy de Angular, el token CSRF y qué pantalla llama a qué.
 - Todos los endpoints con ejemplos y códigos de error: [docs/reference/api-rest.md](../docs/reference/api-rest.md), o Swagger UI en `http://localhost:8080/swagger-ui.html`.
 
-## Pendiente
+## Cómo ejecutarlo
 
-Crear el proyecto Angular aquí (versión por acordar).
+Requisitos: **Node.js 20.19 o superior** (o 22.12+) con npm, y el backend en marcha (`docker compose up --build` en la raíz).
+
+```bash
+cd web-client
+npm install
+npm start          # ng serve en http://localhost:4200
+```
+
+## Estado
+
+Proyecto Angular 21 creado por Manuel Mosquera: rutas y tres componentes (`ventas`, `disponibilidad`, `entregas`) todavía vacíos.
+Falta conectar todo con la API; las fases están en [docs/architecture/web-client-plan.md](../docs/architecture/web-client-plan.md).
