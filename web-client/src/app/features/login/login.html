@@ -1,0 +1,42 @@
+<div class="login">
+  <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+    <div>
+      <h1>Iniciar sesión</h1>
+      <p class="sub">Vendedores y personal de entregas</p>
+    </div>
+
+    <label class="f">
+      <span>Correo</span>
+      <input
+        id="correo"
+        type="email"
+        formControlName="correo"
+        autocomplete="username"
+        [attr.aria-invalid]="invalido('correo')"
+      />
+      @if (invalido('correo')) {
+        <span class="campo-error">Escriba un correo válido.</span>
+      }
+    </label>
+
+    <label class="f">
+      <span>Contraseña</span>
+      <input
+        id="contrasena"
+        type="password"
+        formControlName="contrasena"
+        autocomplete="current-password"
+        [attr.aria-invalid]="invalido('contrasena')"
+      />
+      @if (invalido('contrasena')) {
+        <span class="campo-error">Escriba su contraseña.</span>
+      }
+    </label>
+
+    <app-aviso-error [error]="error()" />
+
+    <button class="btn primary" type="submit" [disabled]="enCurso()">
+      {{ enCurso() ? 'Entrando…' : 'Entrar' }}
+    </button>
+  </form>
+</div>

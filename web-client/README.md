@@ -19,15 +19,38 @@ Cada pantalla debe consumir la API de verdad y mostrar los errores del servidor.
 
 ## Cómo ejecutarlo
 
-Requisitos: **Node.js 20.19 o superior** (o 22.12+) con npm, y el backend en marcha (`docker compose up --build` en la raíz).
+Requisitos: **Node.js 24 LTS** (también sirven 22.12+ y 20.19+; Angular 21 no soporta oficialmente la 26) con npm, y el backend en marcha (`docker compose up --build` en la raíz).
 
 ```bash
 cd web-client
-npm install
-npm start          # ng serve en http://localhost:4200
+npm ci
+npm start          # ng serve en http://localhost:4200 (las llamadas a /api pasan por proxy al backend)
 ```
+
+| Comando | Para qué |
+|---|---|
+| `npm start` | Servidor de desarrollo con proxy a `http://localhost:8080` |
+| `npm test` | Pruebas con Vitest |
+| `npm run build` | Compilación de producción |
+| `npm run api:types` | Regenera `src/app/core/api/schema.d.ts` desde el contrato del backend (con el backend en marcha) |
+
+Cuentas de demostración: `ana@polimarket.test` (vendedor), `entregas@polimarket.test`; la clave está en
+[docs/guides/clients.md](../docs/guides/clients.md). Las cuentas de RH y Bodega se rechazan: usan el cliente de escritorio.
+
+## Estructura
+
+```
+src/app/
+  core/       api/ (tipos generados y llamadas HTTP) · auth/ (sesión y guardias) · http/ (interceptor) · layout/ (menú lateral)
+  shared/     piezas reutilizables sin lógica de negocio
+  features/   una carpeta por pantalla: login, disponibilidad, ventas (nueva-venta, mis-ventas), clientes, entregas
+```
+
+Nombres en `kebab-case`; un componente son cuatro archivos (`.ts`, `.html`, `.css`, `.spec.ts`); el resto lleva sufijo
+(`.api.ts`, `.servicio.ts`, `.guard.ts`, `.interceptor.ts`). Una pantalla puede usar `core` y `shared`, nunca otra pantalla.
 
 ## Estado
 
-Proyecto Angular 21 creado por Manuel Mosquera: rutas y tres componentes (`ventas`, `disponibilidad`, `entregas`) todavía vacíos.
-Falta conectar todo con la API; las fases están en [docs/architecture/web-client-plan.md](../docs/architecture/web-client-plan.md).
+Fases 0 y 1 hechas: inicio y cierre de sesión, sesión que sobrevive a recargar la página, guardias por rol, menú lateral
+y manejo central de errores. Las pantallas de negocio son marcadores que se llenan en las fases 2 a 4; el plan está en
+[docs/architecture/web-client-plan.md](../docs/architecture/web-client-plan.md).

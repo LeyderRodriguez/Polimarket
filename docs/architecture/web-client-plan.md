@@ -32,20 +32,26 @@ funcionalidades» junto con el de escritorio (RSI-1 y RSI-4).
 
 ## Estructura
 
-Se respeta lo que ya creó Manuel (`components/ventas`, `disponibilidad`, `entregas`) y se añade lo transversal:
+Se conservan los nombres de las pantallas de Manuel (`ventas`, `disponibilidad`, `entregas`), ahora agrupadas por
+funcionalidad en `features/`, y se añade lo transversal:
 
 ```
 web-client/src/app/
-  core/
-    api/schema.d.ts           ← tipos generados desde el backend (no editar a mano)
-    api/*.servicio.ts         ← un servicio por recurso: productos, ventas, clientes, terceros, auth
-    auth/                     ← sesión actual (signal), guardia por rol
-    http/                     ← interceptor: credenciales y conversión de errores a ErrorApi
-  components/
-    login/  disponibilidad/  ventas/ (nueva venta)  mis-ventas/  clientes/  entregas/
-    compartidos/              ← aviso de error, tabla, cabecera con el usuario
+  core/                       ← existe una sola vez en toda la app
+    api/schema.d.ts             tipos generados desde el backend (no editar a mano)
+    api/tipos.ts                alias legibles y ErrorApi
+    api/*.api.ts                un servicio fino por recurso: auth, y luego productos, ventas, clientes…
+    auth/                       sesión actual (signal), guardias de sesión y de rol
+    http/                       interceptor: errores de la API y sesión caducada
+    layout/shell/               menú lateral según el rol
+  shared/                     ← piezas reutilizables sin lógica de negocio (aviso-error, …)
+  features/                   ← una carpeta por pantalla, con carga diferida
+    login/  disponibilidad/  ventas/{nueva-venta,mis-ventas}/  clientes/  entregas/
   app.routes.ts               ← rutas con guardia por rol
 ```
+
+Reglas: una pantalla usa `core` y `shared`, nunca otra pantalla; `core` no importa `features`. Nombres en
+`kebab-case`; los servicios llevan sufijo (`.api.ts`, `.servicio.ts`, `.guard.ts`, `.interceptor.ts`).
 
 Componentes independientes (standalone), `signal` para el estado y `HttpClient` con interceptor funcional. Sin
 librerías de interfaz: CSS propio con variables, para no añadir dependencias.
@@ -57,7 +63,7 @@ Cada fase termina con algo que funciona contra el backend real y con una revisi�
 | Fase | Qué se entrega | Revisión |
 |---|---|---|
 | **0. Entorno** *(hecha)* | Node 24 LTS, `npm ci`, proxy a `:8080`, tipos generados desde OpenAPI, pruebas en verde | — |
-| **1. Base** | Cliente HTTP con interceptor, servicio de autenticación, guardia por rol, menú según rol, aviso de errores, login funcionando | Sí, al cerrarla |
+| **1. Base** *(hecha)* | Cliente HTTP con interceptor, servicio de autenticación, guardia por rol, menú según rol, aviso de errores, login funcionando | Sí, al cerrarla |
 | **2. Disponibilidad (RSI-2)** | Lista de productos con físico, reservado y disponible, búsqueda por nombre | |
 | **3. Nueva venta (RSI-3)** | Buscar o registrar tercero y cliente, armar el carrito, confirmar; errores `STOCK_INSUFICIENTE` y `VENDEDOR_SIN_AVAL` | Sí, al cerrar las fases 2 y 3 |
 | **4. Mis ventas y Entregas (RSI-6 y RSI-5)** | Anular ventas pendientes; listar pendientes y despachar | |

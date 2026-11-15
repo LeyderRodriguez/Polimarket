@@ -1,1 +1,168 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos globales: variables de color (claro y oscuro) y piezas que se repiten en todas las pantallas.
+   Lo que es de una sola pantalla va en el .css de su componente. */
+:root {
+  --bg: #eef1f0;
+  --win: #ffffff;
+  --fg: #18211f;
+  --muted: #5d6b68;
+  --line: #d6dddb;
+  --soft: #f5f7f6;
+  --accent: #1f6f6b;
+  --accent-fg: #ffffff;
+  --accent-soft: #dcecea;
+  --side: #1d2b2a;
+  --side-fg: #c9d6d3;
+  --side-on: #2c4341;
+  --ok: #2f7a3e;
+  --ok-bg: #e2f1e5;
+  --warn: #9a6200;
+  --warn-bg: #fbefd6;
+  --bad: #b23a2e;
+  --bad-bg: #f8e1de;
+  --f-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: 'IBM Plex Mono', Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121817;
+    --win: #1a2221;
+    --fg: #e4ebe9;
+    --muted: #93a39f;
+    --line: #2c3836;
+    --soft: #202a29;
+    --accent: #4fb3ab;
+    --accent-fg: #0d1716;
+    --accent-soft: #1f3836;
+    --side: #0e1413;
+    --side-fg: #a9b8b5;
+    --side-on: #22312f;
+    --ok: #7fcf8d;
+    --ok-bg: #1d3323;
+    --warn: #e5b45a;
+    --warn-bg: #3a2e14;
+    --bad: #f08a7e;
+    --bad-bg: #3d1f1b;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  margin: 0;
+}
+
+.sub {
+  color: var(--muted);
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+
+/* Botones */
+.btn {
+  font: 500 13px var(--f-body);
+  border: 1px solid var(--line);
+  background: var(--win);
+  color: var(--fg);
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--soft);
+}
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+.btn.primary:hover {
+  filter: brightness(1.08);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Campos de formulario */
+label.f {
+  display: grid;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+input,
+select,
+textarea {
+  font: 14px var(--f-body);
+  color: var(--fg);
+  background: var(--win);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 10px;
+  width: 100%;
+  min-width: 0;
+}
+input[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+.campo-error {
+  color: var(--bad);
+  font-size: 12px;
+}
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Avisos */
+.banner {
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 13px;
+}
+.banner.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.banner.warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.banner.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.banner code {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 4px;
+}
