@@ -21,13 +21,21 @@
         </div>
         <div class="acciones-usuario">
           <app-selector-tema />
+          <button type="button" class="demo" [attr.aria-pressed]="demo.activo()" (click)="demo.alternar()">
+            Modo demostración: {{ demo.activo() ? 'encendido' : 'apagado' }}
+          </button>
           <button type="button" (click)="salir()">Cerrar sesión</button>
         </div>
       </div>
     }
   </aside>
 
-  <main class="pagina">
-    <router-outlet />
-  </main>
+  <div class="derecha">
+    <main class="pagina">
+      <router-outlet />
+    </main>
+    @if (demo.activo()) {
+      <app-panel-demostracion />
+    }
+  </div>
 </div>

@@ -4,12 +4,13 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import type { Rol } from '../api/tipos';
 import { SesionServicio } from '../auth/sesion.servicio';
+import { demostracionInterceptor } from '../demostracion/demostracion.interceptor';
 import { erroresInterceptor } from '../http/errores.interceptor';
 
 /** Mismos proveedores que la aplicación real, pero con un backend simulado que cada prueba controla. */
 export const proveedoresDePrueba = () => [
   provideRouter([]),
-  provideHttpClient(withInterceptors([erroresInterceptor])),
+  provideHttpClient(withInterceptors([demostracionInterceptor, erroresInterceptor])),
   provideHttpClientTesting(),
 ];
 

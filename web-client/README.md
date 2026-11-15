@@ -46,7 +46,7 @@ defecto sigue al sistema operativo y la elección se recuerda en el navegador. L
 
 ```
 src/app/
-  core/       api/ (tipos generados y llamadas HTTP) · auth/ (sesión y guardias) · http/ (interceptor) · layout/ (menú lateral)
+  core/       api/ (tipos generados y llamadas HTTP) · auth/ (sesión y guardias) · http/ (interceptor) · layout/ (menú lateral) · demostracion/ (panel de llamadas)
   shared/     piezas que usan varias pantallas (aviso de error, diálogo de registro de cliente)
   features/   una carpeta por pantalla: login, disponibilidad, ventas (nueva-venta, mis-ventas), clientes, entregas
 ```
@@ -56,8 +56,8 @@ Nombres en `kebab-case`; un componente son cuatro archivos (`.ts`, `.html`, `.cs
 
 ## Estado
 
-Fases 0 a 5 hechas (la 7 se descartó): inicio y cierre de sesión, sesión que sobrevive a recargar la página, guardias por rol, menú lateral,
+Fases 0 a 6 hechas (la 7 se descartó): inicio y cierre de sesión, sesión que sobrevive a recargar la página, guardias por rol, menú lateral,
 manejo central de errores, **Disponibilidad** (RSI-2), **Clientes** (registro en tres pasos), **Nueva venta** (RSI-3, con
 carrito), **Mis ventas** (RSI-6, anular) y **Entregas** (RSI-5, despachar). Las acciones irreversibles piden confirmación en
-la propia fila. Evidencia con capturas en [docs/evidence/web-client](../docs/evidence/web-client/README.md). Falta la fase 6 (modo demostración); el plan está en
+la propia fila. Evidencia con capturas en [docs/evidence/web-client](../docs/evidence/web-client/README.md). El **modo demostración** (botón en el menú lateral) muestra en un panel las llamadas reales al backend; el plan está en
 [docs/architecture/web-client-plan.md](../docs/architecture/web-client-plan.md).
