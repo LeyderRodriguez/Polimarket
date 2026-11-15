@@ -6,15 +6,21 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
- * Base PostgreSQL desechable para las pruebas. Al importarla desde varias pruebas se comparte
- * un solo contenedor, y nunca se toca la base de demostración.
+ * Base PostgreSQL desechable para las pruebas, nunca la de demostración. El contenedor es único por ejecución:
+ * se arranca una sola vez aunque haya varios contextos de Spring (con y sin perfil dev), en vez de uno por contexto.
  */
 @TestConfiguration(proxyBeanMethods = false)
 public class ContenedorPostgres {
 
+    private static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:17");
+
+    static {
+        POSTGRES.start();
+    }
+
     @Bean
     @ServiceConnection
     PostgreSQLContainer postgres() {
-        return new PostgreSQLContainer("postgres:17");
+        return POSTGRES;
     }
 }

@@ -131,6 +131,7 @@ package "Bodegas" {
     -descripcion: String
     -categoria: String
     -precioVenta: BigDecimal
+    -activo: boolean
   }
   class Bodega {
     -idBodega: int
@@ -151,7 +152,8 @@ package "Bodegas" {
     -cantidadAnterior: int
     -cantidadNueva: int
     -motivo: String
-    -usuario: String
+    -referencia: String
+    -idUsuario: int
   }
   enum TipoMovimiento {
     ENTRADA
@@ -203,9 +205,9 @@ package "Entregas" {
     -fechaDespacho: DateTime
     -direccion: String
     -receptor: String
+    -idResponsable: int
     -estado: EstadoEntrega
     +despachar(): void
-    +confirmar(): void
   }
   enum EstadoEntrega {
     DESPACHADA

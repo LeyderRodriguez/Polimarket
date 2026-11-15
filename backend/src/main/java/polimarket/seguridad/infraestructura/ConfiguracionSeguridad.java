@@ -34,9 +34,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity
 class ConfiguracionSeguridad {
 
+    /**
+     * BCrypt con costo configurable. El valor por defecto (10) es el de producción; las pruebas lo bajan porque
+     * cada hash y cada comprobación a ese costo toma decenas de milisegundos y se repite en cada prueba.
+     */
     @Bean
-    PasswordEncoder codificadorDeClaves() {
-        return new BCryptPasswordEncoder();
+    PasswordEncoder codificadorDeClaves(@Value("${polimarket.seguridad.costo-bcrypt:10}") int costo) {
+        return new BCryptPasswordEncoder(costo);
     }
 
     @Bean

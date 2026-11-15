@@ -28,4 +28,29 @@ cd backend
 ./mvnw test
 ```
 
-La propuesta completa está en [docs/propuesta-polimarket.html](docs/propuesta-polimarket.html).
+## Cuentas de demostración (perfil `dev`)
+
+Con `-Dspring-boot.run.profiles=dev` se cargan datos ficticios, una sola vez. La clave ficticia está en
+`backend/src/main/resources/application-dev.yml`; es solo para desarrollo.
+
+| Correo | Rol | Notas |
+|---|---|---|
+| `rh@polimarket.test` | Recursos Humanos | Crea cuentas y aprueba avales |
+| `bodega@polimarket.test` | Bodega | Productos, proveedores, entradas y ajustes |
+| `entregas@polimarket.test` | Entregas | Ve ventas pendientes y las despacha |
+| `ana@polimarket.test` | Vendedor | Aval aprobado: puede vender |
+| `luis@polimarket.test` | Vendedor | Aval pendiente: no puede vender |
+
+## Probar a mano
+
+Con el backend en marcha y la base recién creada (`docker compose down -v && docker compose up -d`):
+
+```bash
+bash docs/probar-api.sh          # RSI-1: cuentas y aval
+bash docs/probar-flujo-venta.sh  # RSI-2 a RSI-6: vender, reservar, anular y despachar
+```
+
+## Documentación
+
+- [Propuesta de implementación](docs/propuesta-polimarket.html): arquitectura, API, reglas y decisiones.
+- `docs/diagramas/`: código PlantUML de los diagramas de clases y de componentes.
