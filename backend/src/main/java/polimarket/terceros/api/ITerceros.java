@@ -10,6 +10,9 @@ public interface ITerceros {
     /** Registra un tercero. Lanza DOCUMENTO_DUPLICADO si ya existe ese documento. */
     TerceroDto registrar(NuevoTercero tercero);
 
+    /** Actualiza solo los datos de contacto. Un dato nulo se deja como estaba. */
+    TerceroDto actualizarContacto(long id, String telefono, String correo, String direccion);
+
     Optional<TerceroDto> consultarPorId(long id);
 
     List<TerceroDto> consultarPorIds(Collection<Long> ids);

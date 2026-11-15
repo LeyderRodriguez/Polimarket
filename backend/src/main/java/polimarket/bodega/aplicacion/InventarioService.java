@@ -5,10 +5,12 @@ import static polimarket.bodega.dominio.Existencia.BODEGA_PRINCIPAL;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -17,22 +19,28 @@ import polimarket.bodega.api.BajoStockDto;
 import polimarket.bodega.api.CambioProducto;
 import polimarket.bodega.api.DisponibilidadDto;
 import polimarket.bodega.api.IInventario;
+import polimarket.bodega.api.ItemReserva;
 import polimarket.bodega.api.MovimientoDto;
 import polimarket.bodega.api.NuevaEntrada;
 import polimarket.bodega.api.NuevoAjuste;
 import polimarket.bodega.api.NuevoProducto;
 import polimarket.bodega.api.ProductoDto;
+import polimarket.bodega.api.ReservaDto;
 import polimarket.bodega.api.TipoMovimiento;
 import polimarket.bodega.dominio.Compra;
 import polimarket.bodega.dominio.CompraRepositorio;
 import polimarket.bodega.dominio.DetalleCompra;
 import polimarket.bodega.dominio.DetalleCompraRepositorio;
+import polimarket.bodega.dominio.DetalleReserva;
+import polimarket.bodega.dominio.DetalleReservaRepositorio;
 import polimarket.bodega.dominio.Existencia;
 import polimarket.bodega.dominio.ExistenciaRepositorio;
 import polimarket.bodega.dominio.MovimientoInventario;
 import polimarket.bodega.dominio.MovimientoRepositorio;
 import polimarket.bodega.dominio.Producto;
 import polimarket.bodega.dominio.ProductoRepositorio;
+import polimarket.bodega.dominio.ReservaInventario;
+import polimarket.bodega.dominio.ReservaRepositorio;
 import polimarket.compartido.ExcepcionNegocio;
 import polimarket.proveedores.api.IProveedores;
 
@@ -45,19 +53,94 @@ class InventarioService implements IInventario {
     private final MovimientoRepositorio movimientos;
     private final CompraRepositorio compras;
     private final DetalleCompraRepositorio detallesCompra;
+    private final ReservaRepositorio reservas;
+    private final DetalleReservaRepositorio detallesReserva;
     private final IProveedores proveedores;
     private final Clock reloj;
 
     InventarioService(ProductoRepositorio productos, ExistenciaRepositorio existencias,
             MovimientoRepositorio movimientos, CompraRepositorio compras, DetalleCompraRepositorio detallesCompra,
-            IProveedores proveedores, Clock reloj) {
+            ReservaRepositorio reservas, DetalleReservaRepositorio detallesReserva, IProveedores proveedores,
+            Clock reloj) {
         this.productos = productos;
         this.existencias = existencias;
         this.movimientos = movimientos;
         this.compras = compras;
         this.detallesCompra = detallesCompra;
+        this.reservas = reservas;
+        this.detallesReserva = detallesReserva;
         this.proveedores = proveedores;
         this.reloj = reloj;
+    }
+
+    // ---- Reservas
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductoDto> consultarProductos(Collection<Long> productoIds) {
+        Map<Long, Existencia> existenciaPorProducto = existenciasPorProducto();
+        return productos.findAllById(productoIds).stream()
+                .map(p -> aDto(p, existenciaPorProducto.get(p.getId())))
+                .toList();
+    }
+
+    @Override
+    public ReservaDto reservar(long ventaId, List<ItemReserva> items) {
+        if (items == null || items.isEmpty()) {
+            throw ExcepcionNegocio.datosInvalidos("La reserva debe incluir al menos un producto.");
+        }
+        // TreeMap: se bloquea siempre en orden de producto, así dos ventas no se bloquean entre sí (sin interbloqueo).
+        Map<Long, Integer> pedido = new TreeMap<>();
+        for (ItemReserva item : items) {
+            if (item.cantidad() <= 0) {
+                throw ExcepcionNegocio.datosInvalidos("Las cantidades deben ser mayores que cero.");
+            }
+            pedido.merge(item.productoId(), item.cantidad(), Integer::sum);
+        }
+        if (reservas.existsByVentaId(ventaId)) {
+            throw ExcepcionNegocio.conflicto("RESERVA_EXISTENTE", "Esa venta ya tiene una reserva.");
+        }
+        // Se comprueba todo con las filas bloqueadas; si algo falla se lanza antes de guardar y la transacción se revierte.
+        for (Map.Entry<Long, Integer> e : pedido.entrySet()) {
+            Existencia existencia = bloquear(e.getKey());
+            int reservado = (int) existencias.reservadoDe(e.getKey());
+            if (!existencia.hayDisponibilidad(e.getValue(), reservado)) {
+                String nombre = productos.findById(e.getKey()).map(Producto::getNombre).orElse("producto " + e.getKey());
+                throw ExcepcionNegocio.conflicto("STOCK_INSUFICIENTE", "No hay unidades suficientes de " + nombre
+                        + ": disponibles " + existencia.disponible(reservado) + ", solicitadas " + e.getValue() + ".");
+            }
+        }
+        ReservaInventario reserva = reservas.save(new ReservaInventario(ventaId, Instant.now(reloj)));
+        pedido.forEach((productoId, cantidad) -> detallesReserva.save(new DetalleReserva(reserva.getId(), productoId, cantidad)));
+        return new ReservaDto(ventaId, reserva.getEstado());
+    }
+
+    @Override
+    public ReservaDto liberarReserva(long ventaId) {
+        ReservaInventario reserva = exigirReserva(ventaId);
+        reserva.liberar();
+        return new ReservaDto(ventaId, reserva.getEstado());
+    }
+
+    @Override
+    public ReservaDto consumirReserva(long ventaId, long usuarioId) {
+        ReservaInventario reserva = exigirReserva(ventaId);
+        reserva.consumir();
+        Instant ahora = Instant.now(reloj);
+        for (DetalleReserva detalle : detallesReserva.findByReservaIdOrderByProductoId(reserva.getId())) {
+            Existencia existencia = bloquear(detalle.getProductoId());
+            int anterior = existencia.getCantidad();
+            existencia.retirar(detalle.getCantidad());
+            movimientos.save(new MovimientoInventario(BODEGA_PRINCIPAL, detalle.getProductoId(), ahora,
+                    TipoMovimiento.SALIDA, detalle.getCantidad(), anterior, existencia.getCantidad(), null,
+                    "VENTA-" + ventaId, usuarioId, null));
+        }
+        return new ReservaDto(ventaId, reserva.getEstado());
+    }
+
+    private ReservaInventario exigirReserva(long ventaId) {
+        return reservas.bloquearPorVenta(ventaId)
+                .orElseThrow(() -> ExcepcionNegocio.noEncontrado("La venta no tiene reserva."));
     }
 
     // ---- Catálogo

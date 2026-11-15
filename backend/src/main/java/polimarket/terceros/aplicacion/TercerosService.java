@@ -47,6 +47,13 @@ class TercerosService implements ITerceros {
     }
 
     @Override
+    public TerceroDto actualizarContacto(long id, String telefono, String correo, String direccion) {
+        Tercero t = terceros.findById(id).orElseThrow(() -> ExcepcionNegocio.noEncontrado("No se encontró el tercero."));
+        t.actualizarContacto(limpiar(telefono), limpiar(correo), limpiar(direccion));
+        return aDto(t);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Optional<TerceroDto> consultarPorId(long id) {
         return terceros.findById(id).map(TercerosService::aDto);

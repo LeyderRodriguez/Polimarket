@@ -54,6 +54,19 @@ public class Tercero {
         this.direccion = direccion;
     }
 
+    /** Un dato nulo significa «sin cambio». El documento y el nombre no se modifican aquí. */
+    public void actualizarContacto(String telefono, String correo, String direccion) {
+        if (telefono != null) {
+            this.telefono = telefono;
+        }
+        if (correo != null) {
+            this.correo = correo;
+        }
+        if (direccion != null) {
+            this.direccion = direccion;
+        }
+    }
+
     public Long getId() { return id; }
     public TipoTercero getTipo() { return tipo; }
     public String getTipoDocumento() { return tipoDocumento; }

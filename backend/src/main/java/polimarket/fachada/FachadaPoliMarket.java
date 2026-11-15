@@ -14,6 +14,8 @@ import polimarket.bodega.api.NuevoAjuste;
 import polimarket.bodega.api.NuevoProducto;
 import polimarket.bodega.api.ProductoDto;
 import polimarket.compartido.ExcepcionNegocio;
+import polimarket.entregas.api.EntregaDto;
+import polimarket.entregas.api.IEntregas;
 import polimarket.proveedores.api.CambioProveedor;
 import polimarket.proveedores.api.IProveedores;
 import polimarket.proveedores.api.NuevoProveedor;
@@ -30,6 +32,13 @@ import polimarket.seguridad.api.UsuarioSesion;
 import polimarket.terceros.api.ITerceros;
 import polimarket.terceros.api.NuevoTercero;
 import polimarket.terceros.api.TerceroDto;
+import polimarket.ventas.api.ClienteDto;
+import polimarket.ventas.api.IClientes;
+import polimarket.ventas.api.IVentas;
+import polimarket.ventas.api.NuevaVenta;
+import polimarket.ventas.api.VentaDto;
+import polimarket.ventas.api.VentaPendienteDto;
+import polimarket.ventas.api.VentaResumenDto;
 
 /**
  * Fachada (patrón Facade): único punto de entrada para los clientes. No contiene reglas de
@@ -48,15 +57,22 @@ public class FachadaPoliMarket {
     private final IAutorizacion autorizacion;
     private final IInventario inventario;
     private final IProveedores proveedores;
+    private final IClientes clientes;
+    private final IVentas ventas;
+    private final IEntregas entregas;
 
     public FachadaPoliMarket(ITerceros terceros, IAutenticacion autenticacion, IGestionPersonal personal,
-            IAutorizacion autorizacion, IInventario inventario, IProveedores proveedores) {
+            IAutorizacion autorizacion, IInventario inventario, IProveedores proveedores, IClientes clientes,
+            IVentas ventas, IEntregas entregas) {
         this.terceros = terceros;
         this.autenticacion = autenticacion;
         this.personal = personal;
         this.autorizacion = autorizacion;
         this.inventario = inventario;
         this.proveedores = proveedores;
+        this.clientes = clientes;
+        this.ventas = ventas;
+        this.entregas = entregas;
     }
 
     // ---- Sesión
@@ -210,7 +226,67 @@ public class FachadaPoliMarket {
         proveedores.asociarProducto(proveedorId, producto.codigo(), null);
     }
 
+    // ---- Clientes (vendedor con aval)
+
+    @Transactional(readOnly = true)
+    public List<ClienteDto> listarClientes(UsuarioSesion usuario) {
+        exigirAvalSiEsVendedor(usuario);
+        return clientes.listarClientes();
+    }
+
+    @Transactional
+    public ClienteDto registrarCliente(UsuarioSesion usuario, long terceroId, List<String> preferencias) {
+        exigirAvalSiEsVendedor(usuario);
+        return clientes.registrarCliente(terceroId, preferencias);
+    }
+
+    /** Actualiza las preferencias del cliente (Ventas) y/o los datos de contacto de su tercero (Terceros). */
+    @Transactional
+    public ClienteDto actualizarCliente(UsuarioSesion usuario, long clienteId, List<String> preferencias,
+            String telefono, String correo, String direccion) {
+        exigirAvalSiEsVendedor(usuario);
+        ClienteDto cliente = clientes.consultarCliente(clienteId)
+                .orElseThrow(() -> ExcepcionNegocio.noEncontrado("No se encontró el cliente."));
+        if (telefono != null || correo != null || direccion != null) {
+            terceros.actualizarContacto(cliente.terceroId(), telefono, correo, direccion);
+        }
+        return preferencias == null ? cliente : clientes.actualizarPreferencias(clienteId, preferencias);
+    }
+
+    // ---- Ventas y entregas (RSI-3, RSI-5, RSI-6)
+
+    /** El vendedor sale de la sesión; el cliente no puede registrar una venta a nombre de otro. */
+    @Transactional
+    public VentaDto registrarVenta(UsuarioSesion usuario, NuevaVenta venta) {
+        return ventas.registrar(vendedorDe(usuario).id(), venta);
+    }
+
+    @Transactional(readOnly = true)
+    public List<VentaResumenDto> misVentas(UsuarioSesion usuario) {
+        return ventas.listarVentasDelVendedor(vendedorDe(usuario).id());
+    }
+
+    @Transactional
+    public VentaDto anularVenta(UsuarioSesion usuario, long ventaId) {
+        return ventas.anular(ventaId, vendedorDe(usuario).id());
+    }
+
+    @Transactional(readOnly = true)
+    public List<VentaPendienteDto> pendientesEntrega() {
+        return entregas.listarPendientes();
+    }
+
+    @Transactional
+    public EntregaDto despachar(UsuarioSesion usuario, long ventaId) {
+        return entregas.despachar(ventaId, usuario.getId());
+    }
+
     // ---- Apoyo
+
+    private VendedorDto vendedorDe(UsuarioSesion usuario) {
+        return personal.consultarVendedorPorTercero(usuario.getTerceroId())
+                .orElseThrow(() -> ExcepcionNegocio.sinPermiso("SIN_PERMISO", "La cuenta no corresponde a un vendedor."));
+    }
 
     /** Un vendedor sin aval vigente no puede usar las funciones de vendedor. Otros roles no se ven afectados. */
     private void exigirAvalSiEsVendedor(UsuarioSesion usuario) {

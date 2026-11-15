@@ -65,6 +65,17 @@ public class Existencia {
         cantidad += unidades;
     }
 
+    /** Saca unidades físicas de la bodega (despacho). Nunca deja el físico negativo. */
+    public void retirar(int unidades) {
+        if (unidades <= 0) {
+            throw ExcepcionNegocio.datosInvalidos("La cantidad a retirar debe ser mayor que cero.");
+        }
+        if (unidades > cantidad) {
+            throw ExcepcionNegocio.conflicto("STOCK_INSUFICIENTE", "No hay unidades físicas suficientes para el despacho.");
+        }
+        cantidad -= unidades;
+    }
+
     /** Fija el stock físico. No puede ser negativo ni quedar por debajo de las reservas activas. */
     public void ajustarA(int nuevaCantidad, int reservado) {
         if (nuevaCantidad < 0) {
