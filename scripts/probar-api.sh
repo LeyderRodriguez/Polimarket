@@ -2,7 +2,7 @@
 # Recorrido manual de RSI-1 contra el backend en marcha (perfil dev).
 #   docker compose up -d
 #   cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
-#   bash docs/probar-api.sh          (en Git Bash, WSL o Linux/macOS)
+#   bash scripts/probar-api.sh          (en Git Bash, WSL o Linux/macOS)
 BASE="${BASE:-http://localhost:8080}"
 CLAVE="${CLAVE:-Demo-1234}"            # clave ficticia del perfil dev
 JAR="$(mktemp)"

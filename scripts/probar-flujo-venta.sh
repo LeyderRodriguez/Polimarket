@@ -2,7 +2,7 @@
 # Recorrido manual de RSI-2 a RSI-6 con los datos de demostración (perfil dev, base recién creada).
 #   docker compose up -d
 #   cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
-#   bash docs/probar-flujo-venta.sh          (en Git Bash, WSL o Linux/macOS)
+#   bash scripts/probar-flujo-venta.sh          (en Git Bash, WSL o Linux/macOS)
 # Muestra qué ve cada rol: vendedora, bodega y entregas, cada uno con su propia sesión.
 BASE="${BASE:-http://localhost:8080}"
 CLAVE="${CLAVE:-Demo-1234}"            # clave ficticia del perfil dev
