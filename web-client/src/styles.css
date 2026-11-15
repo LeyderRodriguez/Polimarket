@@ -22,10 +22,14 @@
   --f-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
   --f-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
   --f-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: light;
 }
 
+/* Tema oscuro. Se aplica de dos maneras: cuando el sistema lo pide y la persona no eligió «claro», o cuando eligió
+   «oscuro» con el selector (atributo data-tema en <html>, ver TemaServicio). Los valores están dos veces porque CSS no
+   permite compartir un bloque entre una media query y un selector de atributo. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-tema='claro']) {
     --bg: #121817;
     --win: #1a2221;
     --fg: #e4ebe9;
@@ -46,6 +50,28 @@
     --bad-bg: #3d1f1b;
     color-scheme: dark;
   }
+}
+
+:root[data-tema='oscuro'] {
+  --bg: #121817;
+  --win: #1a2221;
+  --fg: #e4ebe9;
+  --muted: #93a39f;
+  --line: #2c3836;
+  --soft: #202a29;
+  --accent: #4fb3ab;
+  --accent-fg: #0d1716;
+  --accent-soft: #1f3836;
+  --side: #0e1413;
+  --side-fg: #a9b8b5;
+  --side-on: #22312f;
+  --ok: #7fcf8d;
+  --ok-bg: #1d3323;
+  --warn: #e5b45a;
+  --warn-bg: #3a2e14;
+  --bad: #f08a7e;
+  --bad-bg: #3d1f1b;
+  color-scheme: dark;
 }
 
 * {

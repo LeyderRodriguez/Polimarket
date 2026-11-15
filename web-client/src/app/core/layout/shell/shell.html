@@ -17,6 +17,7 @@
       <div class="usuario">
         <b>{{ persona.nombre }}</b>
         Rol {{ etiquetaRol() }}
+        <app-selector-tema />
         <button type="button" (click)="salir()">Cerrar sesión</button>
       </div>
     }

@@ -6,11 +6,12 @@ import { inicioDe } from '../../core/auth/inicio';
 import { SesionServicio } from '../../core/auth/sesion.servicio';
 import { aErrorApi } from '../../core/http/error-api';
 import { AvisoError } from '../../shared/aviso-error/aviso-error';
+import { SelectorTema } from '../../shared/selector-tema/selector-tema';
 import { CLAVE_DEMO, CUENTAS_DEMO, type CuentaDemo } from './cuentas-demo';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, AvisoError],
+  imports: [ReactiveFormsModule, AvisoError, SelectorTema],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -25,7 +26,8 @@ export class Login {
   protected readonly enCurso = signal(false);
   protected readonly error = signal<ErrorApi | null>(null);
 
-  protected readonly cuentasDemo = CUENTAS_DEMO;
+  protected readonly cuentasWeb = CUENTAS_DEMO.filter((c) => c.cliente === 'web');
+  protected readonly cuentasEscritorio = CUENTAS_DEMO.filter((c) => c.cliente === 'escritorio');
   /** Si el backend no respondió al abrir la página, se dice aquí en vez de mostrar un login que parece normal. */
   protected readonly errorServidor = this.sesion.errorRestauracion;
 

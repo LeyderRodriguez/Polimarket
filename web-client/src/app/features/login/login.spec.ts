@@ -39,6 +39,15 @@ describe('Login', () => {
     expect(el.querySelector('[role="alert"]')?.textContent).toContain('SIN_CONEXION');
   });
 
+  it('separa las cuentas de este cliente web de las del cliente de escritorio', () => {
+    const textos = (grupo: string) =>
+      [...el.querySelectorAll(`[data-cliente="${grupo}"] .chip`)].map((b) => b.textContent?.trim());
+
+    expect(textos('web')).toEqual(['Ana · vendedora', 'Luis · vendedor', 'Entregas']);
+    expect(textos('escritorio')).toEqual(['RH', 'Bodega']);
+    expect(el.querySelector('[data-cliente="escritorio"]')?.textContent).toContain('aquí se rechazan');
+  });
+
   it('al elegir una cuenta de demostración llena el correo y la contraseña', async () => {
     const botones = [...el.querySelectorAll<HTMLButtonElement>('.chip')];
     expect(botones.length).toBeGreaterThanOrEqual(3);

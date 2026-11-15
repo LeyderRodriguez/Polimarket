@@ -1,4 +1,5 @@
 <div class="login">
+  <div class="esquina"><app-selector-tema /></div>
   <div class="tarjeta">
     <app-aviso-error [error]="errorServidor()" />
     <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
@@ -44,12 +45,27 @@
 
     <section class="demo" aria-label="Cuentas de demostración">
       <p class="sub">Cuentas de demostración: elija una y pulse Entrar.</p>
-      <div class="demo-botones">
-        @for (cuenta of cuentasDemo; track cuenta.correo) {
-          <button type="button" class="chip" [title]="cuenta.detalle" (click)="usarCuenta(cuenta)">
-            {{ cuenta.etiqueta }}
-          </button>
-        }
+
+      <div class="grupo" data-cliente="web">
+        <span class="grupo-titulo">Para este cliente web</span>
+        <div class="demo-botones">
+          @for (cuenta of cuentasWeb; track cuenta.correo) {
+            <button type="button" class="chip" [title]="cuenta.detalle" (click)="usarCuenta(cuenta)">
+              {{ cuenta.etiqueta }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="grupo" data-cliente="escritorio">
+        <span class="grupo-titulo">Del cliente de escritorio <small>(aquí se rechazan)</small></span>
+        <div class="demo-botones">
+          @for (cuenta of cuentasEscritorio; track cuenta.correo) {
+            <button type="button" class="chip escritorio" [title]="cuenta.detalle" (click)="usarCuenta(cuenta)">
+              {{ cuenta.etiqueta }}
+            </button>
+          }
+        </div>
       </div>
     </section>
   </div>

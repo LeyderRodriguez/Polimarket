@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import type { Rol } from '../../api/tipos';
+import { SelectorTema } from '../../../shared/selector-tema/selector-tema';
 import { SesionServicio } from '../../auth/sesion.servicio';
 
 interface Opcion {
@@ -25,7 +26,7 @@ const ETIQUETAS: Partial<Record<Rol, string>> = { VENDEDOR: 'Vendedor', ENTREGAS
 /** Marco de la aplicación una vez dentro: menú lateral según el rol y el espacio donde se muestra cada pantalla. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, SelectorTema],
   templateUrl: './shell.html',
   styleUrl: './shell.css',
 })

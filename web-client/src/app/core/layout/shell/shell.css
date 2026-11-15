@@ -61,6 +61,10 @@ nav a.activo {
   font-weight: 500;
   overflow-wrap: anywhere;
 }
+.usuario app-selector-tema {
+  display: block;
+  margin-top: 10px;
+}
 .usuario button {
   display: block;
   margin-top: 8px;
