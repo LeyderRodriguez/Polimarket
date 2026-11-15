@@ -2,59 +2,20 @@ package polimarket.fachada;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.concurrent.atomic.AtomicLong;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
-import polimarket.ContenedorPostgres;
-import polimarket.recursoshumanos.api.IGestionPersonal;
-import polimarket.seguridad.api.IAutenticacion;
-import polimarket.seguridad.api.NuevoUsuario;
-import polimarket.seguridad.api.RolUsuario;
-import polimarket.terceros.api.ITerceros;
-import polimarket.terceros.api.NuevoTercero;
 import polimarket.terceros.api.TerceroDto;
-import polimarket.terceros.api.TipoTercero;
 
-/**
- * Recorrido de RSI-1 por la API: login, crear cuenta de vendedor (aval pendiente), aprobar y consultar.
- * Cada prueba corre en una transacción que se revierte, así no deja datos.
- */
-@SpringBootTest
-@AutoConfigureMockMvc
-@Import(ContenedorPostgres.class)
-@Transactional
-class CuentasYAvalApiTest {
-
-    private static final String CLAVE = "ClavePrueba-1";
-    private static final AtomicLong SECUENCIA = new AtomicLong(5_000_000);
-
-    @Autowired MockMvc mvc;
-    @Autowired ITerceros terceros;
-    @Autowired IAutenticacion autenticacion;
-    @Autowired IGestionPersonal personal;
-
-    String correoRh;
-
-    @BeforeEach
-    void crearCuentaDeRh() {
-        TerceroDto rh = persona("Rosa", "Herrera");
-        personal.registrarEmpleado(rh.id(), "Recursos Humanos");
-        correoRh = "rh" + rh.id() + "@prueba.test";
-        autenticacion.crearUsuario(new NuevoUsuario(rh.id(), correoRh, CLAVE, RolUsuario.RECURSOS_HUMANOS));
-    }
+/** Recorrido de RSI-1 por la API: login, crear cuenta de vendedor (aval pendiente), aprobar y consultar. */
+class CuentasYAvalApiTest extends BaseApiTest {
 
     @Test
     void sinSesionDevuelve401() throws Exception {
@@ -88,13 +49,12 @@ class CuentasYAvalApiTest {
 
         MvcResult creada = mvc.perform(post("/api/usuarios").session(rh).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(cuenta(ana.id(), "ana" + ana.id() + "@prueba.test", "VENDEDOR")))
+                        .content(cuenta(ana.id(), correoDe("ana", ana.id()), "VENDEDOR")))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.rol").value("VENDEDOR"))
                 .andExpect(jsonPath("$.estadoAval").value("PENDIENTE"))
                 .andReturn();
-        long vendedorId = ((Number) com.jayway.jsonpath.JsonPath.read(creada.getResponse().getContentAsString(),
-                "$.vendedorId")).longValue();
+        long vendedorId = leerId(creada, "$.vendedorId");
 
         mvc.perform(get("/api/vendedores/" + vendedorId + "/autorizacion").session(rh))
                 .andExpect(status().isOk())
@@ -118,14 +78,13 @@ class CuentasYAvalApiTest {
     void unVendedorNoPuedeAprobarSuPropioAval() throws Exception {
         MockHttpSession rh = iniciarSesion(correoRh);
         TerceroDto luis = persona("Luis", "Mora");
-        String correoLuis = "luis" + luis.id() + "@prueba.test";
         MvcResult creada = mvc.perform(post("/api/usuarios").session(rh).with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON).content(cuenta(luis.id(), correoLuis, "VENDEDOR")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuenta(luis.id(), correoDe("luis", luis.id()), "VENDEDOR")))
                 .andExpect(status().isCreated()).andReturn();
-        long vendedorId = ((Number) com.jayway.jsonpath.JsonPath.read(creada.getResponse().getContentAsString(),
-                "$.vendedorId")).longValue();
+        long vendedorId = leerId(creada, "$.vendedorId");
 
-        MockHttpSession vendedor = iniciarSesion(correoLuis);
+        MockHttpSession vendedor = iniciarSesion(correoDe("luis", luis.id()));
 
         mvc.perform(post("/api/vendedores/" + vendedorId + "/aval/aprobar").session(vendedor).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{}"))
@@ -137,14 +96,24 @@ class CuentasYAvalApiTest {
     void unVendedorSinAvalNoPuedeUsarTerceros() throws Exception {
         MockHttpSession rh = iniciarSesion(correoRh);
         TerceroDto eva = persona("Eva", "Rojas");
-        String correoEva = "eva" + eva.id() + "@prueba.test";
         mvc.perform(post("/api/usuarios").session(rh).with(csrf()).contentType(MediaType.APPLICATION_JSON)
-                .content(cuenta(eva.id(), correoEva, "VENDEDOR"))).andExpect(status().isCreated());
+                .content(cuenta(eva.id(), correoDe("eva", eva.id()), "VENDEDOR"))).andExpect(status().isCreated());
 
-        mvc.perform(get("/api/terceros").session(iniciarSesion(correoEva))
+        mvc.perform(get("/api/terceros").session(iniciarSesion(correoDe("eva", eva.id())))
                         .param("tipoDocumento", "CC").param("numeroDocumento", "1"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.codigo").value("VENDEDOR_SIN_AVAL"));
+    }
+
+    @Test
+    void elClienteWebDeAngularPuedeLlamarConCredenciales() throws Exception {
+        mvc.perform(options("/api/auth/login")
+                        .header("Origin", "http://localhost:4200")
+                        .header("Access-Control-Request-Method", "POST")
+                        .header("Access-Control-Request-Headers", "content-type,x-xsrf-token"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:4200"))
+                .andExpect(header().string("Access-Control-Allow-Credentials", "true"));
     }
 
     @Test
@@ -162,7 +131,7 @@ class CuentasYAvalApiTest {
         TerceroDto otra = persona("Otra", "Persona");
 
         mvc.perform(post("/api/usuarios").session(rh).with(csrf()).contentType(MediaType.APPLICATION_JSON)
-                        .content(cuenta(otra.id(), "otra" + otra.id() + "@prueba.test", "RECURSOS_HUMANOS")))
+                        .content(cuenta(otra.id(), correoDe("otra", otra.id()), "RECURSOS_HUMANOS")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.codigo").value("DATOS_INVALIDOS"));
     }
@@ -172,7 +141,7 @@ class CuentasYAvalApiTest {
         MockHttpSession rh = iniciarSesion(correoRh);
         TerceroDto uno = persona("Uno", "Primero");
         TerceroDto dos = persona("Dos", "Segundo");
-        String correo = "repetido" + uno.id() + "@prueba.test";
+        String correo = correoDe("repetido", uno.id());
         mvc.perform(post("/api/usuarios").session(rh).with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(cuenta(uno.id(), correo, "BODEGA"))).andExpect(status().isCreated());
 
@@ -191,13 +160,8 @@ class CuentasYAvalApiTest {
     @Test
     void rechazarUnAvalAprobadoLoRevocaYNoSePuedeRechazarDosVeces() throws Exception {
         MockHttpSession rh = iniciarSesion(correoRh);
-        TerceroDto marta = persona("Marta", "Gil");
-        MvcResult creada = mvc.perform(post("/api/usuarios").session(rh).with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(cuenta(marta.id(), "marta" + marta.id() + "@prueba.test", "VENDEDOR")))
-                .andReturn();
-        long id = ((Number) com.jayway.jsonpath.JsonPath.read(creada.getResponse().getContentAsString(),
-                "$.vendedorId")).longValue();
+        MvcResult creada = crearCuentaPorApi(rh, "Marta", "VENDEDOR");
+        long id = leerId(creada, "$.vendedorId");
         mvc.perform(post("/api/vendedores/" + id + "/aval/aprobar").session(rh).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isOk());
 
@@ -210,24 +174,5 @@ class CuentasYAvalApiTest {
                         .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.codigo").value("ESTADO_INVALIDO"));
-    }
-
-    // ---- apoyo
-
-    private MockHttpSession iniciarSesion(String correo) throws Exception {
-        MvcResult r = mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"correo\":\"" + correo + "\",\"contrasena\":\"" + CLAVE + "\"}"))
-                .andExpect(status().isOk()).andReturn();
-        return (MockHttpSession) r.getRequest().getSession(false);
-    }
-
-    private TerceroDto persona(String nombres, String apellidos) {
-        return terceros.registrar(new NuevoTercero(TipoTercero.NATURAL, "CC",
-                String.valueOf(SECUENCIA.incrementAndGet()), nombres, apellidos, null, null, null, null));
-    }
-
-    private static String cuenta(long terceroId, String correo, String rol) {
-        return "{\"terceroId\":" + terceroId + ",\"correo\":\"" + correo + "\",\"contrasenaInicial\":\"" + CLAVE
-                + "\",\"rol\":\"" + rol + "\"}";
     }
 }

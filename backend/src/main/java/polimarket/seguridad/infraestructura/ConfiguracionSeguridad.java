@@ -1,5 +1,7 @@
 package polimarket.seguridad.infraestructura;
 
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -18,6 +20,9 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Sesión administrada por el servidor (cookie JSESSIONID) con protección CSRF por cookie
@@ -44,10 +49,28 @@ class ConfiguracionSeguridad {
         return new HttpSessionSecurityContextRepository();
     }
 
+    /**
+     * Permite que el cliente web (Angular, otro origen) llame a la API con la cookie de sesión.
+     * El origen se configura con {@code polimarket.cors.origenes}; el cliente C++ no necesita CORS.
+     */
+    @Bean
+    CorsConfigurationSource corsConfigurationSource( // el nombre exacto lo busca Spring Security
+            @Value("${polimarket.cors.origenes:http://localhost:4200}") List<String> origenes) {
+        CorsConfiguration cors = new CorsConfiguration();
+        cors.setAllowedOrigins(origenes);
+        cors.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
+        cors.setAllowedHeaders(List.of("Content-Type", "X-XSRF-TOKEN"));
+        cors.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource fuente = new UrlBasedCorsConfigurationSource();
+        fuente.registerCorsConfiguration("/api/**", cors);
+        return fuente;
+    }
+
     @Bean
     SecurityFilterChain cadenaDeFiltros(HttpSecurity http, SecurityContextRepository repositorioDeContexto)
             throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())

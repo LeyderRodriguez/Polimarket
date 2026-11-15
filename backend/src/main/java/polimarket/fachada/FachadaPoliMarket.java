@@ -4,7 +4,20 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import polimarket.bodega.api.BajoStockDto;
+import polimarket.bodega.api.CambioProducto;
+import polimarket.bodega.api.DisponibilidadDto;
+import polimarket.bodega.api.IInventario;
+import polimarket.bodega.api.MovimientoDto;
+import polimarket.bodega.api.NuevaEntrada;
+import polimarket.bodega.api.NuevoAjuste;
+import polimarket.bodega.api.NuevoProducto;
+import polimarket.bodega.api.ProductoDto;
 import polimarket.compartido.ExcepcionNegocio;
+import polimarket.proveedores.api.CambioProveedor;
+import polimarket.proveedores.api.IProveedores;
+import polimarket.proveedores.api.NuevoProveedor;
+import polimarket.proveedores.api.ProveedorDto;
 import polimarket.recursoshumanos.api.AvalDto;
 import polimarket.recursoshumanos.api.IAutorizacion;
 import polimarket.recursoshumanos.api.IGestionPersonal;
@@ -33,13 +46,17 @@ public class FachadaPoliMarket {
     private final IAutenticacion autenticacion;
     private final IGestionPersonal personal;
     private final IAutorizacion autorizacion;
+    private final IInventario inventario;
+    private final IProveedores proveedores;
 
     public FachadaPoliMarket(ITerceros terceros, IAutenticacion autenticacion, IGestionPersonal personal,
-            IAutorizacion autorizacion) {
+            IAutorizacion autorizacion, IInventario inventario, IProveedores proveedores) {
         this.terceros = terceros;
         this.autenticacion = autenticacion;
         this.personal = personal;
         this.autorizacion = autorizacion;
+        this.inventario = inventario;
+        this.proveedores = proveedores;
     }
 
     // ---- Sesión
@@ -127,6 +144,70 @@ public class FachadaPoliMarket {
     @Transactional
     public AvalDto rechazarAval(UsuarioSesion responsable, long vendedorId, String observacion) {
         return autorizacion.rechazar(vendedorId, responsable.getTerceroId(), observacion);
+    }
+
+    // ---- Productos y disponibilidad (RSI-2)
+
+    /** Quien consulta disponibilidad: Bodega, o un vendedor con aval vigente. */
+    @Transactional(readOnly = true)
+    public List<DisponibilidadDto> listarDisponibilidad(UsuarioSesion usuario) {
+        exigirAvalSiEsVendedor(usuario);
+        return inventario.listarDisponibilidad();
+    }
+
+    @Transactional
+    public ProductoDto crearProducto(NuevoProducto producto) {
+        return inventario.crearProducto(producto);
+    }
+
+    @Transactional
+    public ProductoDto actualizarProducto(long productoId, CambioProducto cambio) {
+        return inventario.actualizarProducto(productoId, cambio);
+    }
+
+    // ---- Inventario (RSI-4)
+
+    @Transactional(readOnly = true)
+    public List<BajoStockDto> listarBajoStock() {
+        return inventario.listarBajoStock();
+    }
+
+    @Transactional
+    public MovimientoDto registrarEntrada(UsuarioSesion usuario, NuevaEntrada entrada) {
+        return inventario.registrarEntrada(entrada, usuario.getId());
+    }
+
+    @Transactional
+    public MovimientoDto registrarAjuste(UsuarioSesion usuario, NuevoAjuste ajuste) {
+        return inventario.registrarAjuste(ajuste, usuario.getId());
+    }
+
+    // ---- Proveedores
+
+    @Transactional
+    public ProveedorDto registrarProveedor(NuevoProveedor proveedor) {
+        return proveedores.registrar(proveedor);
+    }
+
+    @Transactional
+    public ProveedorDto actualizarProveedor(long proveedorId, CambioProveedor cambio) {
+        return proveedores.actualizar(proveedorId, cambio);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProveedorDto> listarProveedores() {
+        return proveedores.listar();
+    }
+
+    /**
+     * Asocia un producto de Bodega a un proveedor. Proveedores guarda el código del producto, así que la
+     * fachada traduce el id a código: ninguno de los dos componentes conoce al otro.
+     */
+    @Transactional
+    public void asociarProductoAProveedor(long proveedorId, long productoId) {
+        ProductoDto producto = inventario.consultarProducto(productoId)
+                .orElseThrow(() -> ExcepcionNegocio.noEncontrado("No se encontró el producto."));
+        proveedores.asociarProducto(proveedorId, producto.codigo(), null);
     }
 
     // ---- Apoyo
