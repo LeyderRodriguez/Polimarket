@@ -2,7 +2,9 @@ package polimarket.fachada;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +48,60 @@ class InventarioApiTest extends BaseApiTest {
                         .content("{\"codigo\":\"ARR-01\",\"nombre\":\"Otro\",\"precioVenta\":\"1\",\"stockMinimo\":0}"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.codigo").value("CODIGO_DUPLICADO"));
+    }
+
+    @Test
+    void bodegaActualizaUnProductoSoloEnLosCamposQueEnvia() throws Exception {
+        long producto = crearProducto("ARR-01", "Arroz", 5);
+
+        mvc.perform(patch("/api/productos/" + producto).session(bodega).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"precioVenta\":\"5500\",\"stockMinimo\":8}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.precioVenta").value("5500.00"))
+                .andExpect(jsonPath("$.stockMinimo").value(8))
+                .andExpect(jsonPath("$.nombre").value("Arroz")) // lo que no se envió no cambia
+                .andExpect(jsonPath("$.codigo").value("ARR-01"));
+
+        mvc.perform(patch("/api/productos/999999").session(bodega).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"nombre\":\"X\"}"))
+                .andExpect(status().isNotFound());
+        mvc.perform(patch("/api/productos/" + producto).session(bodega).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"precioVenta\":\"-1\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void bodegaActualizaYListaProveedores() throws Exception {
+        long proveedor = crearProveedor("Distribuidora Ejemplo");
+
+        mvc.perform(patch("/api/proveedores/" + proveedor).session(bodega).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"telefonoContacto\":\"3009998888\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.telefonoContacto").value("3009998888"))
+                .andExpect(jsonPath("$.nombreContacto").value("Lucía")); // no se pisó
+
+        mvc.perform(get("/api/proveedores").session(bodega))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == " + proveedor + ")].nombre").value("Distribuidora Ejemplo"));
+
+        mvc.perform(post("/api/proveedores").session(bodega).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"terceroId\":" + terceros.consultarPorDocumento("NIT",
+                                String.valueOf(empresaDe(proveedor))).orElseThrow().id() + "}"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.codigo").value("PROVEEDOR_EXISTENTE"));
+    }
+
+    @Test
+    void unFrontQueIntentaBorrarRecibeUnErrorClaroYNoSeTocaNingunDato() throws Exception {
+        long producto = crearProducto("ARR-01", "Arroz", 5);
+
+        mvc.perform(delete("/api/productos/" + producto).session(bodega).with(csrf()))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.codigo").value("METODO_NO_PERMITIDO"));
+
+        mvc.perform(get("/api/productos").session(bodega))
+                .andExpect(jsonPath("$[?(@.id == " + producto + ")].nombre").value("Arroz")); // sigue ahí
     }
 
     @Test
@@ -226,6 +282,12 @@ class InventarioApiTest extends BaseApiTest {
                                 + "\",\"precioVenta\":\"5000.00\",\"stockMinimo\":" + minimo + "}"))
                 .andExpect(status().isCreated()).andReturn();
         return leerId(r, "$.id");
+    }
+
+    /** Documento (NIT) de la empresa detrás de un proveedor, para repetir su registro. */
+    private String empresaDe(long proveedorId) {
+        return jdbc.queryForObject("select t.numero_documento from proveedores.proveedor p "
+                + "join terceros.tercero t on t.id = p.tercero_id where p.id = ?", String.class, proveedorId);
     }
 
     private long crearProveedor(String razonSocial) throws Exception {

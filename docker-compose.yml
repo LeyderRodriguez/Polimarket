@@ -1,3 +1,5 @@
+# Todo el sistema:   docker compose up --build        (solo hace falta Docker; el backend queda en :8080)
+# Solo la base:      docker compose up -d postgres    (para desarrollar con ./mvnw spring-boot:run)
 services:
   postgres:
     image: postgres:17
@@ -15,6 +17,22 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  backend:
+    build: ./backend
+    container_name: polimarket-backend
+    depends_on:
+      postgres:
+        condition: service_healthy      # el backend espera a que la base esté lista
+    environment:
+      # Dentro de la red de Docker la base se llama «postgres», no «localhost».
+      POLIMARKET_DB_URL: jdbc:postgresql://postgres:5432/polimarket
+      POLIMARKET_DB_USER: polimarket
+      POLIMARKET_DB_PASSWORD: polimarket
+      # Con «dev» se cargan los datos de demostración. Para una base vacía: SPRING_PROFILES_ACTIVE= docker compose up
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE-dev}
+    ports:
+      - "8080:8080"
 
 volumes:
   polimarket-datos:
