@@ -1,0 +1,4 @@
+# Perfil de desarrollo / demostración: ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+polimarket:
+  demo:
+    cargar-datos: true   # el cargador de datos ficticios solo actúa con este perfil

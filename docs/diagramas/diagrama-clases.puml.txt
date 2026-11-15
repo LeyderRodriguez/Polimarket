@@ -1,0 +1,279 @@
+@startuml
+title PoliMarket - Modelo de datos (Diagrama de clases UML 2.5)
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam dpi 130
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam package {
+  BackgroundColor #F7F9FC
+  BorderColor #555555
+}
+hide empty methods
+skinparam ArrowColor #333333
+skinparam note {
+  BackgroundColor #FFF8DC
+  BorderColor #999999
+}
+
+package "Seguridad" {
+  class Usuario {
+    -idUsuario: int
+    -correo: String
+    -contrasenaHash: String
+    -idTercero: int
+    -rol: RolUsuario
+    -activo: boolean
+    +validarClave(clave: String): boolean
+  }
+  enum RolUsuario {
+    RECURSOS_HUMANOS
+    VENDEDOR
+    BODEGA
+    ENTREGAS
+  }
+}
+
+package "Terceros" {
+  class Tercero {
+    -idTercero: int
+    -tipoTercero: TipoTercero
+    -tipoDocumento: String
+    -numeroDocumento: String
+    -nombres: String
+    -apellidos: String
+    -razonSocial: String
+    -telefono: String
+    -correo: String
+    -direccion: String
+    +asignarRol(rol: RolTercero): void
+    +tieneRol(tipo: String): boolean
+  }
+  abstract class RolTercero {
+    -idRol: int
+    -fechaAsignacion: Date
+    -activo: boolean
+  }
+  enum TipoTercero {
+    NATURAL
+    JURIDICA
+  }
+}
+
+package "Recursos Humanos" {
+  class Empleado {
+    -cargo: String
+    -fechaIngreso: Date
+    -estado: EstadoEmpleado
+    +cambiarEstado(nuevo: EstadoEmpleado): void
+  }
+  class Vendedor {
+    -codigoVendedor: String
+    -zona: String
+    +estaAutorizado(): boolean
+  }
+  class AvalRH {
+    -idAval: int
+    -fechaSolicitud: Date
+    -fechaRespuesta: Date
+    -estado: EstadoAval
+    -observacion: String
+    +aprobar(responsable: Empleado): void
+    +rechazar(responsable: Empleado, motivo: String): void
+  }
+  enum EstadoEmpleado {
+    ACTIVO
+    INACTIVO
+    RETIRADO
+  }
+  enum EstadoAval {
+    PENDIENTE
+    APROBADO
+    RECHAZADO
+  }
+}
+
+package "Ventas" {
+  class Cliente {
+    -fechaRegistro: Date
+    -preferencias: List<String>
+  }
+  class Venta {
+    -idVenta: int
+    -fecha: DateTime
+    -direccionEntrega: String
+    -total: BigDecimal
+    -estado: EstadoVenta
+    +calcularTotal(): BigDecimal
+    +anular(): void
+  }
+  class DetalleVenta {
+    -cantidad: int
+    -precioUnitario: BigDecimal
+    +subtotal(): BigDecimal
+  }
+  enum EstadoVenta {
+    PENDIENTE_ENTREGA
+    DESPACHADA
+    ANULADA
+  }
+}
+
+package "Bodegas" {
+  class Producto {
+    -idProducto: int
+    -codigo: String
+    -nombre: String
+    -descripcion: String
+    -categoria: String
+    -precioVenta: BigDecimal
+  }
+  class Bodega {
+    -idBodega: int
+    -nombre: String
+    -ubicacion: String
+  }
+  class Existencia {
+    -cantidad: int
+    -stockMinimo: int
+    +hayDisponibilidad(cant: int): boolean
+    +bajoStock(): boolean
+  }
+  class MovimientoInventario {
+    -idMovimiento: int
+    -fecha: DateTime
+    -tipo: TipoMovimiento
+    -cantidad: int
+    -cantidadAnterior: int
+    -cantidadNueva: int
+    -motivo: String
+    -usuario: String
+  }
+  enum TipoMovimiento {
+    ENTRADA
+    SALIDA
+    AJUSTE
+  }
+  class ReservaInventario {
+    -idReserva: int
+    -idVenta: int
+    -fecha: DateTime
+    -estado: EstadoReserva
+    +consumir(): void
+    +liberar(): void
+  }
+  class DetalleReserva {
+    -cantidad: int
+  }
+  enum EstadoReserva {
+    ACTIVA
+    CONSUMIDA
+    LIBERADA
+  }
+  class Compra {
+    -idCompra: int
+    -fecha: Date
+    -numeroFactura: String
+    -total: BigDecimal
+  }
+  class DetalleCompra {
+    -cantidad: int
+    -costoUnitario: BigDecimal
+  }
+}
+
+package "Proveedores" {
+  class Proveedor {
+    -nombreContacto: String
+    -telefonoContacto: String
+  }
+  class ProductoSuministrado {
+    -codigoProducto: String
+    -precioCompra: BigDecimal
+  }
+}
+
+package "Entregas" {
+  class Entrega {
+    -idEntrega: int
+    -fechaDespacho: DateTime
+    -direccion: String
+    -receptor: String
+    -estado: EstadoEntrega
+    +despachar(): void
+    +confirmar(): void
+  }
+  enum EstadoEntrega {
+    DESPACHADA
+    ENTREGADA
+    FALLIDA
+  }
+}
+
+Tercero "1" *-- "1..*" RolTercero : desempeña >
+TipoTercero <.. Tercero
+RolTercero <|-- Empleado
+RolTercero <|-- Cliente
+RolTercero <|-- Proveedor
+Empleado <|-- Vendedor
+EstadoEmpleado <.. Empleado
+Vendedor "1" -- "0..*" AvalRH : solicita >
+Empleado "1" -- "0..*" AvalRH : emite >
+EstadoAval <.. AvalRH
+
+Venta "0..*" --> "1" Vendedor : registrada por >
+Venta "0..*" --> "1" Cliente : comprada por >
+Venta "1" *-- "1..*" DetalleVenta
+EstadoVenta <.. Venta
+DetalleVenta "0..*" --> "1" Producto
+
+Bodega "1" *-- "0..*" Existencia
+Existencia "0..*" --> "1" Producto
+Bodega "1" -- "0..*" MovimientoInventario
+MovimientoInventario "0..*" --> "1" Producto
+TipoMovimiento <.. MovimientoInventario
+Bodega "1" -- "0..*" Compra : recibe >
+Compra "1" *-- "1..*" DetalleCompra
+DetalleCompra "0..*" --> "1" Producto
+ReservaInventario "1" *-- "1..*" DetalleReserva
+DetalleReserva "0..*" --> "1" Producto
+EstadoReserva <.. ReservaInventario
+Compra "0..1" --> "1..*" MovimientoInventario : origina entrada >
+Compra "0..*" --> "1" Proveedor : adquirida a >
+
+Proveedor "1" *-- "1..*" ProductoSuministrado
+
+Entrega "0..1" --> "1" Venta : atiende >
+Entrega "0..1" --> "1..*" MovimientoInventario : origina salida >
+EstadoEntrega <.. Entrega
+
+note bottom of Usuario
+  La clave se guarda como hash.
+  idTercero es una referencia por
+  identificador: Seguridad no
+  depende de Terceros.
+end note
+note bottom of Venta
+  Solo un vendedor con aval APROBADO
+  puede registrarla. La cantidad de
+  cada detalle no supera la cantidad
+  disponible (fisica - reservas ACTIVAS).
+  La reserva referencia la venta por
+  idVenta: Bodega no depende de Ventas.
+end note
+note bottom of Existencia
+  cantidad es el stock fisico.
+  Disponible = cantidad - reservas
+  ACTIVAS. Si disponible < stockMinimo
+  se consulta a Proveedores para
+  reabastecer.
+end note
+note bottom of ProductoSuministrado
+  Referencia el producto por código:
+  Proveedores no depende de Bodega.
+end note
+@enduml

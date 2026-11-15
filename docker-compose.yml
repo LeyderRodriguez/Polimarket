@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: polimarket-postgres
+    environment:
+      POSTGRES_DB: polimarket
+      POSTGRES_USER: polimarket
+      POSTGRES_PASSWORD: polimarket
+    ports:
+      - "5432:5432"
+    volumes:
+      - polimarket-datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U polimarket -d polimarket"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  polimarket-datos:

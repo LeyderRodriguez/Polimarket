@@ -1,0 +1,105 @@
+@startuml
+title PoliMarket - Diagrama de componentes UML
+skinparam dpi 130
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam nodesep 40
+skinparam ranksep 60
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam interface {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam package {
+  BackgroundColor #F7F9FC
+  BorderColor #555555
+}
+
+package "Capa cliente" {
+  package "Cliente Web (Angular)" {
+    [UIVentas] as UIVEN
+    [UIEntregas] as UIENT
+  }
+  package "Cliente de escritorio (C++)" {
+    [UIRecursosHumanos] as UIRH
+    [UIBodega] as UIBOD
+  }
+}
+
+package "Capa de negocio" {
+  () "IPoliMarket\n(API REST)" as IPM
+  [FachadaPoliMarket\n<<Facade>>] as FAC
+  IPM - FAC
+
+  package "Componentes de área" {
+    () "IGestionPersonal" as iGP
+    () "IAutorizacion" as iAUT
+    [CompRecursosHumanos] as RH
+    iGP -- RH
+    iAUT -- RH
+
+    () "IClientes" as iCLI
+    () "IVentas" as iVEN
+    [CompVentas] as VEN
+    iCLI -- VEN
+    iVEN -- VEN
+
+    () "IEntregas" as iENT
+    [CompEntregas] as ENT
+    iENT -- ENT
+
+    () "IInventario" as iINV
+    [CompBodega] as BOD
+    iINV -- BOD
+
+    () "IProveedores" as iPRO
+    [CompProveedores] as PRO
+    iPRO -- PRO
+  }
+
+  package "Componentes transversales" {
+    () "IAutenticacion" as iAUTN
+    [CompSeguridad] as SEG
+    iAUTN -- SEG
+    () "ITerceros" as iTER
+    [CompTerceros] as TER
+    iTER -- TER
+  }
+}
+
+UIRH ..> IPM
+UIVEN ..> IPM
+UIBOD ..> IPM
+UIENT ..> IPM
+
+FAC ..> iGP
+FAC ..> iAUT
+FAC ..> iCLI
+FAC ..> iVEN
+FAC ..> iENT
+FAC ..> iINV
+FAC ..> iPRO
+FAC ..> iTER
+
+VEN ..> iAUT
+VEN ..> iINV
+ENT ..> iVEN
+ENT ..> iINV
+BOD ..> iPRO
+
+RH ..> iTER
+VEN ..> iTER
+PRO ..> iTER
+FAC ..> iAUTN
+
+legend right
+  Línea continua: el componente provee la interfaz (lollipop).
+  Flecha punteada: el componente requiere la interfaz (<<use>>).
+  Una base PostgreSQL; cada componente tiene su propio esquema.
+endlegend
+@enduml
