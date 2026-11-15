@@ -3,6 +3,7 @@ package polimarket.fachada;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -155,6 +156,80 @@ class CuentasYAvalApiTest extends BaseApiTest {
                                 + uno.numeroDocumento() + "\",\"nombres\":\"X\",\"apellidos\":\"Y\"}"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.codigo").value("DOCUMENTO_DUPLICADO"));
+    }
+
+    @Test
+    void rhListaLasCuentasSinContrasenaNiHash() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+
+        mvc.perform(get("/api/usuarios").session(rh))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.correo == '" + correoRh + "')].nombre").value("Rosa Herrera"))
+                .andExpect(jsonPath("$[0].contrasenaHash").doesNotExist())
+                .andExpect(jsonPath("$[0].contrasena").doesNotExist());
+    }
+
+    @Test
+    void rhCambiaElCorreoPeroNoElRol() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+        MvcResult creada = crearCuentaPorApi(rh, "Sara", "BODEGA");
+        long id = leerId(creada, "$.id");
+
+        mvc.perform(patch("/api/usuarios/" + id).session(rh).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"correo\":\"Sara.Nueva@Prueba.test\",\"rol\":\"RECURSOS_HUMANOS\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correo").value("sara.nueva@prueba.test"))
+                .andExpect(jsonPath("$.rol").value("BODEGA")); // el rol enviado se ignora
+
+        MvcResult otra = crearCuentaPorApi(rh, "Tomas", "BODEGA");
+        mvc.perform(patch("/api/usuarios/" + leerId(otra, "$.id")).session(rh).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"correo\":\"sara.nueva@prueba.test\"}"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.codigo").value("CORREO_DUPLICADO"));
+    }
+
+    @Test
+    void unaCuentaDesactivadaNoEntraYSuSesionAbiertaDejaDeValer() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+        MvcResult creada = crearCuentaPorApi(rh, "Paula", "BODEGA");
+        String correo = correoDe("paula", leerId(creada, "$.terceroId"));
+        MockHttpSession sesionAbierta = iniciarSesion(correo);
+        mvc.perform(get("/api/auth/me").session(sesionAbierta)).andExpect(status().isOk());
+
+        mvc.perform(post("/api/usuarios/" + leerId(creada, "$.id") + "/desactivacion").session(rh).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activo").value(false));
+
+        mvc.perform(get("/api/auth/me").session(sesionAbierta))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.codigo").value("CUENTA_DESACTIVADA"));
+        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"correo\":\"" + correo + "\",\"contrasena\":\"" + CLAVE + "\"}"))
+                .andExpect(status().isUnauthorized());
+
+        mvc.perform(post("/api/usuarios/" + leerId(creada, "$.id") + "/desactivacion").session(rh).with(csrf()))
+                .andExpect(status().isConflict()); // no se desactiva dos veces
+    }
+
+    @Test
+    void rhNoPuedeDesactivarSuPropiaCuenta() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+        long miId = ((Number) com.jayway.jsonpath.JsonPath.read(
+                mvc.perform(get("/api/auth/me").session(rh)).andReturn().getResponse().getContentAsString(), "$.id"))
+                .longValue();
+
+        mvc.perform(post("/api/usuarios/" + miId + "/desactivacion").session(rh).with(csrf()))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("SIN_PERMISO"));
+    }
+
+    @Test
+    void soloRhAdministraCuentas() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+        MvcResult bodega = crearCuentaPorApi(rh, "Hugo", "BODEGA");
+        MockHttpSession sesionBodega = iniciarSesion(correoDe("hugo", leerId(bodega, "$.terceroId")));
+
+        mvc.perform(get("/api/usuarios").session(sesionBodega)).andExpect(status().isForbidden());
     }
 
     @Test

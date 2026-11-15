@@ -2,6 +2,7 @@ package polimarket.seguridad.aplicacion;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,37 @@ class UsuariosService implements IAutenticacion {
     @Transactional(readOnly = true)
     public Optional<UsuarioDto> consultarPorId(long id) {
         return usuarios.findById(id).map(UsuariosService::aDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsuarioDto> listarUsuarios() {
+        return usuarios.findAll().stream().map(UsuariosService::aDto).toList();
+    }
+
+    @Override
+    public UsuarioDto actualizarCorreo(long id, String correo) {
+        if (correo == null || !correo.contains("@")) {
+            throw ExcepcionNegocio.datosInvalidos("El correo debe ser válido.");
+        }
+        Usuario u = exigir(id);
+        String nuevo = correo.trim().toLowerCase();
+        if (!nuevo.equalsIgnoreCase(u.getCorreo()) && usuarios.existsByCorreoIgnoreCase(nuevo)) {
+            throw ExcepcionNegocio.conflicto("CORREO_DUPLICADO", "Ya existe una cuenta con ese correo.");
+        }
+        u.cambiarCorreo(nuevo);
+        return aDto(u);
+    }
+
+    @Override
+    public UsuarioDto desactivar(long id) {
+        Usuario u = exigir(id);
+        u.desactivar();
+        return aDto(u);
+    }
+
+    private Usuario exigir(long id) {
+        return usuarios.findById(id).orElseThrow(() -> ExcepcionNegocio.noEncontrado("No se encontró la cuenta."));
     }
 
     private static UsuarioDto aDto(Usuario u) {

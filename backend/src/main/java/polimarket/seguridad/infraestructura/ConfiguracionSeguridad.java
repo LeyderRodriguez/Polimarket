@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
+import polimarket.seguridad.dominio.UsuarioRepositorio;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -67,8 +69,8 @@ class ConfiguracionSeguridad {
     }
 
     @Bean
-    SecurityFilterChain cadenaDeFiltros(HttpSecurity http, SecurityContextRepository repositorioDeContexto)
-            throws Exception {
+    SecurityFilterChain cadenaDeFiltros(HttpSecurity http, SecurityContextRepository repositorioDeContexto,
+            UsuarioRepositorio usuarios) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf
@@ -76,6 +78,7 @@ class ConfiguracionSeguridad {
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                         .ignoringRequestMatchers("/api/auth/login"))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new CuentaActivaFilter(usuarios), SecurityContextHolderFilter.class)
                 .securityContext(contexto -> contexto.securityContextRepository(repositorioDeContexto))
                 .authorizeHttpRequests(rutas -> rutas
                         .requestMatchers("/api/auth/login").permitAll()

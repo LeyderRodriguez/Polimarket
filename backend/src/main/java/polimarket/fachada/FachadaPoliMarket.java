@@ -1,7 +1,9 @@
 package polimarket.fachada;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import polimarket.bodega.api.BajoStockDto;
@@ -130,6 +132,33 @@ public class FachadaPoliMarket {
             }
             default -> throw new IllegalStateException("Rol no permitido: " + rol);
         };
+    }
+
+    @Transactional(readOnly = true)
+    public List<CuentaDto> listarCuentas() {
+        List<UsuarioDto> cuentas = autenticacion.listarUsuarios();
+        Map<Long, String> nombres = terceros.consultarPorIds(cuentas.stream().map(UsuarioDto::terceroId).toList())
+                .stream().collect(Collectors.toMap(TerceroDto::id, TerceroDto::nombreCompleto));
+        return cuentas.stream()
+                .map(c -> new CuentaDto(c.id(), c.terceroId(), nombres.get(c.terceroId()), c.correo(), c.rol(), c.activo()))
+                .toList();
+    }
+
+    @Transactional
+    public UsuarioDto actualizarCuenta(long cuentaId, String correo) {
+        return autenticacion.actualizarCorreo(cuentaId, correo);
+    }
+
+    /**
+     * Desactiva una cuenta (no se borra). RH no puede desactivar la suya. Si era de un vendedor, sus ventas
+     * pendientes siguen pendientes y Entregas puede despacharlas; nadie las anula mientras la cuenta esté inactiva.
+     */
+    @Transactional
+    public UsuarioDto desactivarCuenta(UsuarioSesion solicitante, long cuentaId) {
+        if (solicitante.getId() == cuentaId) {
+            throw ExcepcionNegocio.sinPermiso("SIN_PERMISO", "No puede desactivar su propia cuenta.");
+        }
+        return autenticacion.desactivar(cuentaId);
     }
 
     // ---- Vendedores y aval

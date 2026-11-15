@@ -211,6 +211,21 @@ class VentasEntregasApiTest extends BaseApiTest {
     }
 
     @Test
+    void siSeDesactivaLaCuentaDelVendedorSusVentasPendientesSiguenYEntregasLasDespacha() throws Exception {
+        long ventaId = vender(linea(producto, 6));
+        MvcResult yo = mvc.perform(get("/api/auth/me").session(vendedor)).andReturn();
+        mvc.perform(post("/api/usuarios/" + leerId(yo, "$.id") + "/desactivacion").session(rh).with(csrf()))
+                .andExpect(status().isOk());
+
+        mvc.perform(post("/api/ventas/" + ventaId + "/cancelacion").session(vendedor).with(csrf()))
+                .andExpect(status().isUnauthorized()); // la cuenta inactiva ya no opera
+        mvc.perform(get("/api/ventas/pendientes-entrega").session(entregas))
+                .andExpect(jsonPath("$[?(@.ventaId == " + ventaId + ")]").isNotEmpty());
+        mvc.perform(post("/api/ventas/" + ventaId + "/despacho").session(entregas).with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void soloEntregasVeLosPendientesYDespacha() throws Exception {
         long ventaId = vender(linea(producto, 2));
 

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import polimarket.compartido.ExcepcionNegocio;
 import polimarket.seguridad.api.RolUsuario;
 
 @Entity
@@ -47,6 +48,17 @@ public class Usuario {
         this.contrasenaHash = contrasenaHash;
         this.rol = rol;
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public void cambiarCorreo(String nuevoCorreo) {
+        this.correo = nuevoCorreo;
+    }
+
+    public void desactivar() {
+        if (!activo) {
+            throw ExcepcionNegocio.conflicto("ESTADO_INVALIDO", "La cuenta ya está desactivada.");
+        }
+        activo = false;
     }
 
     public Long getId() { return id; }
