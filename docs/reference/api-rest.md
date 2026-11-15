@@ -3,7 +3,7 @@
 Referencia de los endpoints del backend. La misma información, con ejemplos para probar, está en **Swagger UI**
 (`http://localhost:8080/swagger-ui.html`) y el contrato en JSON en `/v3/api-docs`. Si algo difiere, manda el código.
 
-Para empezar rápido (sesión, CSRF, ejemplos en Angular y C++) lee [guia-clientes.md](guia-clientes.md).
+Para empezar rápido (sesión, CSRF, ejemplos en Angular y C++) lee [guides/clients.md](../guides/clients.md).
 
 ## Convenciones
 

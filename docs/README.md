@@ -1,11 +1,20 @@
 # Documentación de PoliMarket
 
+Organizada según para qué abres el documento (idea tomada de [Diátaxis](https://diataxis.fr/)):
+
+| Carpeta | Para | Documentos |
+|---|---|---|
+| [`guides/`](guides/) | **Hacer algo** paso a paso | [clients.md](guides/clients.md): levantar el backend, sesión, CSRF y qué pantalla llama a qué |
+| [`reference/`](reference/) | **Consultar** un dato exacto | [api-rest.md](reference/api-rest.md): todos los endpoints · [database.md](reference/database.md): esquemas, tablas y migraciones |
+| [`architecture/`](architecture/) | **Entender** por qué es así | [scope.md](architecture/scope.md): alcance, componentes, roles y reglas · [diagrams/](architecture/diagrams/): PlantUML de clases y componentes |
+
+## Según quién seas
+
 | Si eres… | Empieza por |
 |---|---|
-| **Del frontend** (Angular o C++) | [guia-clientes.md](guia-clientes.md): levantar el backend, sesión, CSRF, qué pantalla llama a qué |
-| Necesitas el detalle de un endpoint | [api-rest.md](api-rest.md), o Swagger UI en `http://localhost:8080/swagger-ui.html` |
-| Quieres saber qué hace el backend y qué no | [alcance.md](alcance.md) |
-| Necesitas entender la base de datos | [esquemas.md](esquemas.md) |
-| Vas a revisar los diagramas | [diagramas/](diagramas/): código PlantUML de las clases y de los componentes |
+| **Del frontend** (Angular o C++) | [guides/clients.md](guides/clients.md) |
+| Necesitas el detalle de un endpoint | [reference/api-rest.md](reference/api-rest.md), o Swagger UI en `http://localhost:8080/swagger-ui.html` |
+| Quieres saber qué hace el backend y qué no | [architecture/scope.md](architecture/scope.md) |
+| Necesitas entender la base de datos | [reference/database.md](reference/database.md) |
 
 Para ejecutar el sistema y probarlo a mano, el [README del repositorio](../README.md) tiene los pasos.

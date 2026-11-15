@@ -60,7 +60,7 @@ tanto si se lee sobre las dos capas (cliente y negocio) como solo sobre el negoc
 ## Roles
 
 Cada cuenta tiene **un solo rol**: `RECURSOS_HUMANOS`, `VENDEDOR`, `BODEGA` o `ENTREGAS`. La matriz de quién puede
-qué está en [api-rest.md](api-rest.md#quién-puede-qué). Los permisos se comprueban **en el backend**: lo que el cliente
+qué está en [api-rest.md](../reference/api-rest.md#quién-puede-qué). Los permisos se comprueban **en el backend**: lo que el cliente
 oculte o muestre es solo comodidad.
 
 ## Reglas de negocio
@@ -95,7 +95,7 @@ oculte o muestre es solo comodidad.
 ## Cambios frente al documento del grupo
 
 La implementación ajusta algunos puntos del Word; hay que acordarlos con el grupo y reflejarlos en los diagramas
-(`docs/diagramas/`):
+(`docs/architecture/diagrams/`):
 
 | Tema | Word | Implementación |
 |---|---|---|

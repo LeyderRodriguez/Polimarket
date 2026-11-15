@@ -1,7 +1,7 @@
 # Guía rápida para los clientes (Angular y C++)
 
 Si vas a hacer un cliente de PoliMarket, empieza aquí. En 10 minutos debes tener el backend corriendo y haber
-hecho tu primera llamada. El detalle de cada endpoint está en [api-rest.md](api-rest.md).
+hecho tu primera llamada. El detalle de cada endpoint está en [api-rest.md](../reference/api-rest.md).
 
 ## 1. Levantar el backend
 
@@ -162,4 +162,4 @@ Después de vender, cancelar o despachar, **vuelve a pedir la lista**: no asumas
 | `ESTADO_INVALIDO` | 409 | Ya se despachó o canceló | Refrescar la lista |
 | `*_DUPLICADO`, `*_EXISTENTE` | 409 | Ya existe ese documento, correo o código | Ofrecer usar el existente |
 
-Lista completa en [api-rest.md](api-rest.md#errores).
+Lista completa en [api-rest.md](../reference/api-rest.md#errores).

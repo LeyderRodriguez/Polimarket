@@ -114,8 +114,8 @@ bash scripts/probar-flujo-venta.sh  # RSI-2 a RSI-6: vender, reservar, anular y 
 
 ## Documentación
 
-- **[docs/guia-clientes.md](docs/guia-clientes.md): para el frontend. Cómo levantar el backend, sesión, CSRF y qué pantalla llama a qué.**
-- [docs/api-rest.md](docs/api-rest.md): referencia de todos los endpoints (y Swagger UI en `http://localhost:8080/swagger-ui.html`).
-- [docs/alcance.md](docs/alcance.md): qué hace el backend, los componentes, los roles y las reglas de negocio.
-- [docs/esquemas.md](docs/esquemas.md): base de datos, esquemas por componente y migraciones.
-- `docs/diagramas/`: código PlantUML de los diagramas de clases y de componentes.
+- **[docs/guides/clients.md](docs/guides/clients.md): para el frontend. Cómo levantar el backend, sesión, CSRF y qué pantalla llama a qué.**
+- [docs/reference/api-rest.md](docs/reference/api-rest.md): referencia de todos los endpoints (y Swagger UI en `http://localhost:8080/swagger-ui.html`).
+- [docs/architecture/scope.md](docs/architecture/scope.md): qué hace el backend, los componentes, los roles y las reglas de negocio.
+- [docs/reference/database.md](docs/reference/database.md): base de datos, esquemas por componente y migraciones.
+- `docs/architecture/diagrams/`: código PlantUML de los diagramas de clases y de componentes.
