@@ -1,4 +1,4 @@
-package polimarket.terceros;
+package polimarket.terceros.api;
 
 import java.util.Collection;
 import java.util.List;

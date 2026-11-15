@@ -1,4 +1,4 @@
-package polimarket.api;
+package polimarket.fachada;
 
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import polimarket.recursoshumanos.AvalDto;
-import polimarket.recursoshumanos.VendedorDto;
-import polimarket.seguridad.UsuarioSesion;
+import polimarket.recursoshumanos.api.AvalDto;
+import polimarket.recursoshumanos.api.VendedorDto;
+import polimarket.seguridad.api.UsuarioSesion;
 
 @RestController
 @RequestMapping("/api/vendedores")

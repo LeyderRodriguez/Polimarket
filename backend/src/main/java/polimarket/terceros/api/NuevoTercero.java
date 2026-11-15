@@ -1,4 +1,4 @@
-package polimarket.terceros;
+package polimarket.terceros.api;
 
 /** Datos para registrar un tercero. Natural: nombres y apellidos. Jurídica: razón social. */
 public record NuevoTercero(

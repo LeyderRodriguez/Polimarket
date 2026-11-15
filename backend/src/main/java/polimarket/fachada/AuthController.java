@@ -1,4 +1,4 @@
-package polimarket.api;
+package polimarket.fachada;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import polimarket.compartido.ExcepcionNegocio;
-import polimarket.seguridad.UsuarioSesion;
+import polimarket.seguridad.api.UsuarioSesion;
 
 @RestController
 @RequestMapping("/api/auth")

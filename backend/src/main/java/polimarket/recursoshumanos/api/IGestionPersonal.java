@@ -1,4 +1,4 @@
-package polimarket.recursoshumanos;
+package polimarket.recursoshumanos.api;
 
 import java.util.List;
 import java.util.Optional;

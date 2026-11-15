@@ -1,22 +1,22 @@
-package polimarket.api;
+package polimarket.fachada;
 
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import polimarket.compartido.ExcepcionNegocio;
-import polimarket.recursoshumanos.AvalDto;
-import polimarket.recursoshumanos.IAutorizacion;
-import polimarket.recursoshumanos.IGestionPersonal;
-import polimarket.recursoshumanos.VendedorDto;
-import polimarket.seguridad.IAutenticacion;
-import polimarket.seguridad.NuevoUsuario;
-import polimarket.seguridad.RolUsuario;
-import polimarket.seguridad.UsuarioDto;
-import polimarket.seguridad.UsuarioSesion;
-import polimarket.terceros.ITerceros;
-import polimarket.terceros.NuevoTercero;
-import polimarket.terceros.TerceroDto;
+import polimarket.recursoshumanos.api.AvalDto;
+import polimarket.recursoshumanos.api.IAutorizacion;
+import polimarket.recursoshumanos.api.IGestionPersonal;
+import polimarket.recursoshumanos.api.VendedorDto;
+import polimarket.seguridad.api.IAutenticacion;
+import polimarket.seguridad.api.NuevoUsuario;
+import polimarket.seguridad.api.RolUsuario;
+import polimarket.seguridad.api.UsuarioDto;
+import polimarket.seguridad.api.UsuarioSesion;
+import polimarket.terceros.api.ITerceros;
+import polimarket.terceros.api.NuevoTercero;
+import polimarket.terceros.api.TerceroDto;
 
 /**
  * Fachada (patrón Facade): único punto de entrada para los clientes. No contiene reglas de

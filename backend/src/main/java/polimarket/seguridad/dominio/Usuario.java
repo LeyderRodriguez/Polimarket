@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
-import polimarket.seguridad.RolUsuario;
+import polimarket.seguridad.api.RolUsuario;
 
 @Entity
 @Table(schema = "seguridad", name = "usuario")

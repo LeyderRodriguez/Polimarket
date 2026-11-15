@@ -1,4 +1,4 @@
-package polimarket.api;
+package polimarket.fachada;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

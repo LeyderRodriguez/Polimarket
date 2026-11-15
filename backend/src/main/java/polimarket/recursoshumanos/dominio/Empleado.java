@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import polimarket.recursoshumanos.EstadoEmpleado;
+import polimarket.recursoshumanos.api.EstadoEmpleado;
 
 @Entity
 @Table(schema = "recursos_humanos", name = "empleado")

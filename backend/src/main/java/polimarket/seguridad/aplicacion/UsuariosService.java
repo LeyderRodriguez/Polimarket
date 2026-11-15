@@ -7,9 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import polimarket.compartido.ExcepcionNegocio;
-import polimarket.seguridad.IAutenticacion;
-import polimarket.seguridad.NuevoUsuario;
-import polimarket.seguridad.UsuarioDto;
+import polimarket.seguridad.api.IAutenticacion;
+import polimarket.seguridad.api.NuevoUsuario;
+import polimarket.seguridad.api.UsuarioDto;
 import polimarket.seguridad.dominio.Usuario;
 import polimarket.seguridad.dominio.UsuarioRepositorio;
 

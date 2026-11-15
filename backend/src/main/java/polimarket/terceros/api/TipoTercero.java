@@ -1,4 +1,4 @@
-package polimarket.terceros;
+package polimarket.terceros.api;
 
 public enum TipoTercero {
     NATURAL,

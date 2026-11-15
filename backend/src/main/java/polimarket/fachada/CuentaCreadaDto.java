@@ -1,7 +1,7 @@
-package polimarket.api;
+package polimarket.fachada;
 
-import polimarket.recursoshumanos.EstadoAval;
-import polimarket.seguridad.RolUsuario;
+import polimarket.recursoshumanos.api.EstadoAval;
+import polimarket.seguridad.api.RolUsuario;
 
 /** Cuenta recién creada. Para un vendedor incluye su registro y el aval, que empieza PENDIENTE. */
 public record CuentaCreadaDto(

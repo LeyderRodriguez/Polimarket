@@ -1,4 +1,4 @@
-package polimarket.api;
+package polimarket.fachada;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import polimarket.seguridad.UsuarioSesion;
-import polimarket.terceros.NuevoTercero;
-import polimarket.terceros.TerceroDto;
-import polimarket.terceros.TipoTercero;
+import polimarket.seguridad.api.UsuarioSesion;
+import polimarket.terceros.api.NuevoTercero;
+import polimarket.terceros.api.TerceroDto;
+import polimarket.terceros.api.TipoTercero;
 
 @RestController
 @RequestMapping("/api/terceros")

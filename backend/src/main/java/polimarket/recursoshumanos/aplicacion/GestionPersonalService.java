@@ -11,19 +11,19 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import polimarket.compartido.ExcepcionNegocio;
-import polimarket.recursoshumanos.EmpleadoDto;
-import polimarket.recursoshumanos.EstadoAval;
-import polimarket.recursoshumanos.IGestionPersonal;
-import polimarket.recursoshumanos.VendedorDto;
+import polimarket.recursoshumanos.api.EmpleadoDto;
+import polimarket.recursoshumanos.api.EstadoAval;
+import polimarket.recursoshumanos.api.IGestionPersonal;
+import polimarket.recursoshumanos.api.VendedorDto;
 import polimarket.recursoshumanos.dominio.AvalRH;
 import polimarket.recursoshumanos.dominio.AvalRepositorio;
 import polimarket.recursoshumanos.dominio.Empleado;
 import polimarket.recursoshumanos.dominio.EmpleadoRepositorio;
 import polimarket.recursoshumanos.dominio.Vendedor;
 import polimarket.recursoshumanos.dominio.VendedorRepositorio;
-import polimarket.terceros.ITerceros;
-import polimarket.terceros.TerceroDto;
-import polimarket.terceros.TipoRolTercero;
+import polimarket.terceros.api.ITerceros;
+import polimarket.terceros.api.TerceroDto;
+import polimarket.terceros.api.TipoRolTercero;
 
 @Service
 @Transactional

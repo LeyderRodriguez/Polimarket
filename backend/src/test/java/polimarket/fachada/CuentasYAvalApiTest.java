@@ -1,4 +1,4 @@
-package polimarket.api;
+package polimarket.fachada;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,14 +19,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import polimarket.ContenedorPostgres;
-import polimarket.recursoshumanos.IGestionPersonal;
-import polimarket.seguridad.IAutenticacion;
-import polimarket.seguridad.NuevoUsuario;
-import polimarket.seguridad.RolUsuario;
-import polimarket.terceros.ITerceros;
-import polimarket.terceros.NuevoTercero;
-import polimarket.terceros.TerceroDto;
-import polimarket.terceros.TipoTercero;
+import polimarket.recursoshumanos.api.IGestionPersonal;
+import polimarket.seguridad.api.IAutenticacion;
+import polimarket.seguridad.api.NuevoUsuario;
+import polimarket.seguridad.api.RolUsuario;
+import polimarket.terceros.api.ITerceros;
+import polimarket.terceros.api.NuevoTercero;
+import polimarket.terceros.api.TerceroDto;
+import polimarket.terceros.api.TipoTercero;
 
 /**
  * Recorrido de RSI-1 por la API: login, crear cuenta de vendedor (aval pendiente), aprobar y consultar.

@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import polimarket.terceros.TipoRolTercero;
+import polimarket.terceros.api.TipoRolTercero;
 
 @Entity
 @Table(schema = "terceros", name = "rol_tercero")

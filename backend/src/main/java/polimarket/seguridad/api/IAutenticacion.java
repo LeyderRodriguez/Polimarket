@@ -1,4 +1,4 @@
-package polimarket.seguridad;
+package polimarket.seguridad.api;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package polimarket.recursoshumanos;
+package polimarket.recursoshumanos.api;
 
 public enum EstadoAval {
     PENDIENTE,

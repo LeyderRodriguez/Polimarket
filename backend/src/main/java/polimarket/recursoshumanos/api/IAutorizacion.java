@@ -1,4 +1,4 @@
-package polimarket.recursoshumanos;
+package polimarket.recursoshumanos.api;
 
 /**
  * Contrato que otros componentes usan para saber si un vendedor puede operar. El aval vigente es

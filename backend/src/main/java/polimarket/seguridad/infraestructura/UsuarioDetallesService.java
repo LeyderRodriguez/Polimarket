@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import polimarket.seguridad.UsuarioSesion;
+import polimarket.seguridad.api.UsuarioSesion;
 import polimarket.seguridad.dominio.UsuarioRepositorio;
 
 /** Le dice a Spring Security cómo encontrar una cuenta por su correo. */

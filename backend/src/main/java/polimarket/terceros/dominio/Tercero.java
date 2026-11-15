@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import polimarket.terceros.TipoTercero;
+import polimarket.terceros.api.TipoTercero;
 
 @Entity
 @Table(schema = "terceros", name = "tercero")

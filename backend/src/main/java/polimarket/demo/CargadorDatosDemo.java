@@ -7,14 +7,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import polimarket.recursoshumanos.IGestionPersonal;
-import polimarket.seguridad.IAutenticacion;
-import polimarket.seguridad.NuevoUsuario;
-import polimarket.seguridad.RolUsuario;
-import polimarket.terceros.ITerceros;
-import polimarket.terceros.NuevoTercero;
-import polimarket.terceros.TerceroDto;
-import polimarket.terceros.TipoTercero;
+import polimarket.recursoshumanos.api.IGestionPersonal;
+import polimarket.seguridad.api.IAutenticacion;
+import polimarket.seguridad.api.NuevoUsuario;
+import polimarket.seguridad.api.RolUsuario;
+import polimarket.terceros.api.ITerceros;
+import polimarket.terceros.api.NuevoTercero;
+import polimarket.terceros.api.TerceroDto;
+import polimarket.terceros.api.TipoTercero;
 
 /**
  * Datos ficticios para desarrollo y demostración. Solo corre con el perfil {@code dev} y con
