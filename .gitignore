@@ -1,0 +1,29 @@
+# Maven / Java
+target/
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.vs/
+*.user
+*.suo
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+
+# C++
+build/
+out/
+cmake-build-*/
+*.obj
+*.exe
+*.pdb
+
+# Entorno local
+.env
+*.log
