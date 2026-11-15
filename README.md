@@ -92,8 +92,8 @@ todos los clientes deben apuntar a un mismo backend.
 
 ## Cuentas de demostración
 
-Al arrancar la primera vez se cargan datos ficticios (una sola vez). La clave ficticia está en
-`backend/src/main/resources/application.yml`; es solo para desarrollo.
+Al arrancar la primera vez se cargan datos ficticios (una sola vez). **La clave de todas las cuentas es `Demo-1234`**
+(ficticia, solo para desarrollo; sale de `polimarket.demo.clave` en `backend/src/main/resources/application.yml`).
 
 | Correo | Rol | Notas |
 |---|---|---|

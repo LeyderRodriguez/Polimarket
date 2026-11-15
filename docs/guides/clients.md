@@ -27,7 +27,8 @@ Para empezar con datos limpios: `docker compose down -v` y volver a levantar.
 
 ## 2. Cuentas de prueba
 
-La clave de todas está en `backend/src/main/resources/application.yml` (`polimarket.demo.clave`).
+**La clave de todas las cuentas es `Demo-1234`** (ficticia, solo para desarrollo; sale de
+`polimarket.demo.clave` en `backend/src/main/resources/application.yml`).
 
 | Correo | Rol | Quién lo usa | Qué puede hacer |
 |---|---|---|---|
@@ -37,7 +38,40 @@ La clave de todas está en `backend/src/main/resources/application.yml` (`polima
 | `luis@polimarket.test` | VENDEDOR (aval pendiente) | Web | Entra, pero no puede vender (403) |
 | `entregas@polimarket.test` | ENTREGAS | **Web (Angular)** | Ver ventas pendientes y despacharlas |
 
-## 3. Las 5 reglas que tu cliente debe cumplir
+## 3. Probar desde Swagger UI
+
+Es la forma más rápida de ver qué hace cada endpoint sin escribir código.
+
+1. Abre **http://localhost:8080/swagger-ui.html**. Usa siempre `localhost`, no `127.0.0.1` (ver más abajo).
+2. **Inicia sesión primero:** abre *Sesión → POST /api/auth/login*, pulsa *Try it out* y envía
+
+   ```json
+   { "correo": "ana@polimarket.test", "contrasena": "Demo-1234" }
+   ```
+
+   Debe responder `200` con tu perfil. El navegador guarda la cookie de sesión.
+3. Prueba lo que quieras, por ejemplo `GET /api/productos`. Las escrituras (`POST`, `PATCH`) llevan solas el token CSRF.
+
+Cada operación dice qué roles pueden usarla. Cambia de cuenta (`bodega@`, `rh@`, `entregas@`) haciendo login de nuevo.
+
+### Si algo sale mal
+
+| Qué ves | Causa y solución |
+|---|---|
+| `401` · `NO_AUTENTICADO` · «Debe iniciar sesión» | No has hecho el login, o la sesión expiró. Haz el login (paso 2) y repite |
+| `401` · `CREDENCIALES_INVALIDAS` | Correo o clave mal escritos. La clave es `Demo-1234` |
+| El login da `200` pero la siguiente llamada da `401` | Abriste Swagger con `127.0.0.1` y no con `localhost` (o al revés): la cookie es de un solo host. Usa `http://localhost:8080` |
+| Funcionaba y de pronto da `401` | Se reinició el backend (las sesiones viven en memoria) o pasaron 30 minutos sin actividad. Haz login de nuevo |
+| `403` · `SIN_PERMISO` | Estás logueado con un rol que no puede hacer eso. `/api/clientes` y `/api/ventas` son del **vendedor**; `/api/productos` (escritura) y `/api/inventario` de **Bodega** |
+| `403` con el rol correcto, desde `curl` o tu cliente | Falta el encabezado `X-XSRF-TOKEN` en un `POST`/`PATCH` (Swagger lo pone solo) |
+| `403` · `VENDEDOR_SIN_AVAL` | Entraste con `luis@polimarket.test`, cuyo aval está pendiente. Usa `ana@polimarket.test` |
+| Cambié el backend y no se nota | Docker usa la imagen vieja: `docker compose up --build -d backend` |
+| Las cantidades de stock no son las del ejemplo | La base ya tiene ventas de pruebas anteriores. Empieza limpio con `docker compose down -v` y vuelve a levantar |
+
+Swagger marca «Undocumented» junto a los códigos 401 y 403: es solo una etiqueta, porque en el contrato solo se
+describe la respuesta exitosa. Los errores están en [api-rest.md](../reference/api-rest.md#errores).
+
+## 4. Las 5 reglas que tu cliente debe cumplir
 
 1. **Sesión con cookie.** Haz `POST /api/auth/login` y guarda la cookie `JSESSIONID` que responde el servidor.
    Envíala en todas las llamadas siguientes. En Angular: `withCredentials: true`.
@@ -51,13 +85,13 @@ La clave de todas está en `backend/src/main/resources/application.yml` (`polima
 El backend **no confía en el cliente**: el vendedor que vende y el responsable que aprueba salen de la sesión, no de lo
 que envíes. Los precios los pone el servidor.
 
-## 4. Tu primera llamada
+## 5. Tu primera llamada
 
 ```bash
 # 1. Entrar (guarda las cookies en jar.txt)
 curl -c jar.txt -X POST http://localhost:8080/api/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"correo":"ana@polimarket.test","contrasena":"<clave de application.yml>"}'
+  -d '{"correo":"ana@polimarket.test","contrasena":"Demo-1234"}'
 # → {"id":4,"nombre":"Ana Pérez","rol":"VENDEDOR"}
 
 # 2. Leer (solo la cookie de sesión)
@@ -72,7 +106,7 @@ curl -b jar.txt -X POST http://localhost:8080/api/ventas \
 
 El recorrido completo, listo para ejecutar, está en `scripts/probar-flujo-venta.sh`.
 
-## 5. Angular
+## 6. Angular
 
 **Lo más fácil: usa el proxy de desarrollo.** Así el navegador cree que todo viene de `localhost:4200`, no hay CORS
 y Angular pone el token CSRF solo.
@@ -104,7 +138,7 @@ export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
 **Tip:** Swagger publica el contrato en `/v3/api-docs`. Con `openapi-generator` puedes generar los tipos y el
 servicio HTTP de Angular en vez de escribirlos a mano.
 
-## 6. C++
+## 7. C++
 
 El cliente de escritorio no corre en un navegador, así que no hay CORS. Necesitas hacer tres cosas con la
 biblioteca HTTP que elijas (Qt `QNetworkAccessManager`, libcurl, WinHTTP…):
@@ -123,7 +157,7 @@ for (const QNetworkCookie& c : manager.cookieJar()->cookiesForUrl(req.url()))
 manager.post(req, QJsonDocument(cuerpo).toJson());
 ```
 
-## 7. Qué pantalla llama a qué
+## 8. Qué pantalla llama a qué
 
 Cada cliente debe consumir **al menos dos funcionalidades reales** (lo pide la actividad). Sugerencia:
 
@@ -147,7 +181,7 @@ Cada cliente debe consumir **al menos dos funcionalidades reales** (lo pide la a
 
 Después de vender, cancelar o despachar, **vuelve a pedir la lista**: no asumas que el cambio ocurrió, usa la respuesta.
 
-## 8. Errores frecuentes y qué mostrar
+## 9. Errores frecuentes y qué mostrar
 
 | Código | HTTP | Cuándo | Qué hacer en pantalla |
 |---|---|---|---|
