@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { SesionServicio } from './core/auth/sesion.servicio';
+import { demostracionInterceptor } from './core/demostracion/demostracion.interceptor';
 import { erroresInterceptor } from './core/http/errores.interceptor';
 import { TemaServicio } from './core/tema/tema.servicio';
 
@@ -12,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     // Rutas relativas: la cookie de sesión y el token CSRF viajan solos (ver proxy.conf.json).
-    provideHttpClient(withInterceptors([erroresInterceptor])),
+    provideHttpClient(withInterceptors([demostracionInterceptor, erroresInterceptor])),
     // Antes de pintar nada, aplica el tema que la persona eligió la última vez (así no hay un destello del otro tema).
     provideAppInitializer(() => {
       inject(TemaServicio);
