@@ -1,0 +1,146 @@
+<div class="fondo" (click)="cerrar()">
+  <div
+    class="dialogo"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="registro-titulo"
+    (click)="$event.stopPropagation()"
+  >
+    <h3 id="registro-titulo">Registrar cliente</h3>
+
+    <ol class="pasos" aria-label="Pasos del registro">
+      <li [class.activo]="fase() === 'buscar'">1. Buscar tercero</li>
+      <li [class.activo]="fase() === 'datos'" [class.omitido]="fase() === 'preferencias' && yaExistia()">
+        2. Datos del tercero
+      </li>
+      <li [class.activo]="fase() === 'preferencias'">3. Preferencias</li>
+    </ol>
+
+    @switch (fase()) {
+      @case ('buscar') {
+        <form [formGroup]="busqueda" (ngSubmit)="buscarTercero()" novalidate>
+          <div class="fila">
+            <label class="f">
+              <span>Tipo de documento</span>
+              <select formControlName="tipoDocumento">
+                @for (tipo of tiposDocumento; track tipo) {
+                  <option [value]="tipo">{{ tipo }}</option>
+                }
+              </select>
+            </label>
+            <label class="f">
+              <span>Número de documento</span>
+              <input
+                formControlName="numeroDocumento"
+                autocomplete="off"
+                [attr.aria-invalid]="busqueda.controls.numeroDocumento.touched && busqueda.controls.numeroDocumento.invalid"
+              />
+              @if (busqueda.controls.numeroDocumento.touched && busqueda.controls.numeroDocumento.invalid) {
+                <span class="campo-error">Escriba el número de documento.</span>
+              }
+            </label>
+          </div>
+          <app-aviso-error [error]="error()" />
+          <div class="acciones">
+            <button type="button" class="btn" (click)="cerrar()">Cancelar</button>
+            <button type="submit" class="btn primary" [disabled]="enCurso()">
+              {{ enCurso() ? 'Buscando…' : 'Buscar' }}
+            </button>
+          </div>
+        </form>
+      }
+
+      @case ('datos') {
+        <form [formGroup]="datos" (ngSubmit)="registrarTercero()" novalidate>
+          <div class="banner warn" role="status">
+            <code>NO_ENCONTRADO</code> No hay un tercero con ese documento. Regístrelo para continuar.
+          </div>
+          <label class="f">
+            <span>Tipo de persona</span>
+            <select formControlName="tipo">
+              <option value="NATURAL">Natural</option>
+              <option value="JURIDICA">Jurídica (empresa)</option>
+            </select>
+          </label>
+          @if (datos.controls.tipo.value === 'NATURAL') {
+            <div class="fila">
+              <label class="f">
+                <span>Nombres</span>
+                <input formControlName="nombres" [attr.aria-invalid]="falta('nombres')" />
+                @if (falta('nombres')) {
+                  <span class="campo-error">Los nombres son obligatorios.</span>
+                }
+              </label>
+              <label class="f">
+                <span>Apellidos</span>
+                <input formControlName="apellidos" [attr.aria-invalid]="falta('apellidos')" />
+                @if (falta('apellidos')) {
+                  <span class="campo-error">Los apellidos son obligatorios.</span>
+                }
+              </label>
+            </div>
+          } @else {
+            <label class="f">
+              <span>Razón social</span>
+              <input formControlName="razonSocial" [attr.aria-invalid]="falta('razonSocial')" />
+              @if (falta('razonSocial')) {
+                <span class="campo-error">La razón social es obligatoria.</span>
+              }
+            </label>
+          }
+          <div class="fila">
+            <label class="f">
+              <span>Teléfono (opcional)</span>
+              <input formControlName="telefono" autocomplete="off" />
+            </label>
+            <label class="f">
+              <span>Correo (opcional)</span>
+              <input type="email" formControlName="correo" autocomplete="off" />
+              @if (datos.controls.correo.touched && datos.controls.correo.invalid) {
+                <span class="campo-error">Escriba un correo válido.</span>
+              }
+            </label>
+          </div>
+          <label class="f">
+            <span>Dirección (opcional)</span>
+            <input formControlName="direccion" autocomplete="off" />
+          </label>
+          <app-aviso-error [error]="error()" />
+          <div class="acciones">
+            <button type="button" class="btn" (click)="volver()">Atrás</button>
+            <button type="submit" class="btn primary" [disabled]="enCurso()">
+              {{ enCurso() ? 'Registrando…' : 'Registrar tercero y continuar' }}
+            </button>
+          </div>
+        </form>
+      }
+
+      @case ('preferencias') {
+        <form [formGroup]="preferencias" (ngSubmit)="registrarCliente()" novalidate>
+          @if (tercero(); as encontrado) {
+            <div class="encontrado" role="status">
+              Tercero: <b>{{ nombreDe(encontrado) }}</b> · {{ encontrado.tipoDocumento }} {{ encontrado.numeroDocumento }}
+            </div>
+          }
+          @if (yaExistia()) {
+            <p class="sub">
+              El tercero ya estaba registrado, así que se reutilizan sus datos. Por privacidad no se muestran su teléfono,
+              correo ni dirección.
+            </p>
+          }
+          <label class="f">
+            <span>Preferencias (separadas por coma, opcional)</span>
+            <input formControlName="texto" autocomplete="off" placeholder="sin gluten, sin lactosa" />
+          </label>
+          <app-aviso-error [error]="error()" />
+          <div class="acciones">
+            <button type="button" class="btn" (click)="volver()">Atrás</button>
+            <button type="submit" class="btn primary" [disabled]="enCurso()">
+              {{ enCurso() ? 'Registrando…' : 'Registrar cliente' }}
+            </button>
+          </div>
+        </form>
+      }
+    }
+  </div>
+</div>

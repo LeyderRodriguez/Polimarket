@@ -1,2 +1,120 @@
-<h2>Nueva venta</h2>
-<p class="sub">Esta pantalla se construye en la fase 3.</p>
+<section class="pantalla">
+  <div class="cabecera">
+    <div>
+      <h2>Nueva venta</h2>
+      <p class="sub">Al confirmar, el servidor valida su aval y el stock, calcula el total y reserva todo o nada.</p>
+    </div>
+  </div>
+
+  <app-aviso-error [error]="errorCarga()" />
+
+  @if (cargando()) {
+    <p class="sub">Cargando…</p>
+  } @else if (!errorCarga()) {
+    <div class="panel">
+      <div class="fila">
+        <label class="f">
+          <span>Cliente</span>
+          <select id="cliente" (change)="elegirCliente($event)" [disabled]="clientes().length === 0">
+            @for (cliente of clientes(); track cliente.id) {
+              <option [value]="cliente.id" [selected]="cliente.id === clienteId()">{{ cliente.nombre }}</option>
+            } @empty {
+              <option>No hay clientes registrados</option>
+            }
+          </select>
+        </label>
+        <label class="f">
+          <span>Dirección de entrega</span>
+          <input id="direccion" [value]="direccion()" (input)="escribirDireccion($event)" maxlength="200" autocomplete="off" />
+        </label>
+      </div>
+      <div>
+        <button type="button" class="btn" (click)="registrandoCliente.set(true)">+ Registrar cliente nuevo</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Productos</h3>
+      <div class="agregar">
+        <label class="f">
+          <span>Producto</span>
+          <select id="producto" (change)="elegirProducto($event)" [disabled]="porAgregar().length === 0">
+            @for (producto of porAgregar(); track producto.id) {
+              <option [value]="producto.id" [selected]="producto.id === productoElegido()?.id">
+                {{ producto.codigo }} · {{ producto.nombre }}
+              </option>
+            }
+          </select>
+        </label>
+        <label class="f">
+          <span>Cantidad</span>
+          <input id="cantidad" type="number" min="1" [value]="cantidadNueva()" (input)="cambiarCantidadNueva($event)" />
+        </label>
+        <button type="button" class="btn" (click)="agregar()" [disabled]="!productoElegido()">Agregar</button>
+      </div>
+      <p class="sub">
+        @if (productoElegido(); as elegido) {
+          Disponible de {{ elegido.nombre }}: <b>{{ elegido.cantidadDisponible }}</b>. Es solo una ayuda: el servidor lo vuelve
+          a comprobar al confirmar.
+        } @else {
+          No quedan productos con disponibilidad para agregar.
+        }
+      </p>
+
+      <div class="tabla">
+        <table>
+          <caption class="solo-lectores">Productos de la venta</caption>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th class="num">Cantidad</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (linea of detalle(); track linea.productoId) {
+              <tr>
+                <td>{{ linea.producto?.codigo }} · {{ linea.producto?.nombre }}</td>
+                <td class="num">
+                  <input
+                    type="number"
+                    min="1"
+                    [value]="linea.cantidad"
+                    (change)="cambiarCantidad(linea.productoId, $event)"
+                    [attr.aria-label]="'Cantidad de ' + linea.producto?.nombre"
+                  />
+                </td>
+                <td class="num">
+                  <button type="button" class="btn" (click)="quitar(linea.productoId)">Quitar</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="3" class="vacio">Aún no agregó productos.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <app-aviso-error [error]="error()" />
+    @if (venta(); as registrada) {
+      <div class="banner ok" role="status">
+        <b>Venta #{{ registrada.ventaId }} registrada.</b> Estado <code>{{ registrada.estado }}</code> · reserva
+        <code>{{ registrada.reservaEstado }}</code> · total calculado por el servidor:
+        <b>{{ pesos(registrada.total) }}</b>
+      </div>
+    }
+
+    <div class="acciones">
+      <button type="button" class="btn primary" (click)="confirmar()" [disabled]="!puedeConfirmar()">
+        {{ enCurso() ? 'Registrando…' : 'Confirmar venta' }}
+      </button>
+    </div>
+  }
+
+  @if (registrandoCliente()) {
+    <app-registro-cliente (registrado)="alRegistrarCliente($event)" (cerrado)="registrandoCliente.set(false)" />
+  }
+</section>

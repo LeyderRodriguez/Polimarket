@@ -1,14 +1,8 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type { ProductoDisponible } from '../../core/api/tipos';
 import { esperarTurno, proveedoresDePrueba } from '../../core/testing/ayudas';
+import { PRODUCTOS_DE_PRUEBA as PRODUCTOS } from '../../core/testing/datos';
 import { Disponibilidad } from './disponibilidad';
-
-const PRODUCTOS: ProductoDisponible[] = [
-  { id: 1, codigo: 'ARR-01', nombre: 'Arroz', precio: '5000.00', stockFisico: 10, cantidadReservada: 2, cantidadDisponible: 8 },
-  { id: 2, codigo: 'AZU-01', nombre: 'Azúcar', precio: '4200.00', stockFisico: 4, cantidadReservada: 4, cantidadDisponible: 0 },
-  { id: 3, codigo: 'ACE-01', nombre: 'Aceite', precio: '12500.00', stockFisico: 20, cantidadReservada: 3, cantidadDisponible: 17 },
-];
 
 describe('Disponibilidad', () => {
   let fixture: ComponentFixture<Disponibilidad>;

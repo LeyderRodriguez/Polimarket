@@ -10,6 +10,16 @@ export type Rol = Perfil['rol'];
 /** Un producto con su stock físico, lo reservado por ventas pendientes y lo disponible. Los montos viajan como texto. */
 export type ProductoDisponible = components['schemas']['DisponibilidadDto'];
 
+export type Cliente = components['schemas']['ClienteDto'];
+export type SolicitudCliente = components['schemas']['SolicitudCliente'];
+/** Un tercero es la persona o empresa con sus datos comunes; un cliente es un tercero con ese rol. */
+export type Tercero = components['schemas']['TerceroDto'];
+export type SolicitudTercero = components['schemas']['SolicitudTercero'];
+export type TipoPersona = SolicitudTercero['tipo'];
+
+export type SolicitudVenta = components['schemas']['SolicitudVenta'];
+export type Venta = components['schemas']['VentaDto'];
+
 /** Forma de todos los errores que devuelve el backend (`{ codigo, mensaje }`) más el estado HTTP. */
 export interface ErrorApi {
   estado: number;

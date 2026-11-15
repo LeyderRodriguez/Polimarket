@@ -44,7 +44,7 @@ web-client/src/app/
     auth/                       sesión actual (signal), guardias de sesión y de rol
     http/                       interceptor: errores de la API y sesión caducada
     layout/shell/               menú lateral según el rol
-  shared/                     ← piezas reutilizables sin lógica de negocio (aviso-error, …)
+  shared/                     ← piezas que usan varias pantallas (aviso-error, registro-cliente)
   features/                   ← una carpeta por pantalla, con carga diferida
     login/  disponibilidad/  ventas/{nueva-venta,mis-ventas}/  clientes/  entregas/
   app.routes.ts               ← rutas con guardia por rol
@@ -65,9 +65,26 @@ Cada fase termina con algo que funciona contra el backend real y con una revisi�
 | **0. Entorno** *(hecha)* | Node 24 LTS, `npm ci`, proxy a `:8080`, tipos generados desde OpenAPI, pruebas en verde | — |
 | **1. Base** *(hecha)* | Cliente HTTP con interceptor, servicio de autenticación, guardia por rol, menú según rol, aviso de errores, login funcionando | Sí, al cerrarla |
 | **2. Disponibilidad (RSI-2)** *(hecha)* | Lista de productos con físico, reservado y disponible, búsqueda por nombre o código sin importar tildes | |
-| **3. Nueva venta (RSI-3)** | Buscar o registrar tercero y cliente, armar el carrito, confirmar; errores `STOCK_INSUFICIENTE` y `VENDEDOR_SIN_AVAL` | Sí, al cerrar las fases 2 y 3 |
+| **3. Nueva venta (RSI-3)** *(hecha)* | Registrar el cliente (buscar tercero, registrarlo si no existe, preferencias), armar el carrito, confirmar; errores `STOCK_INSUFICIENTE` y `VENDEDOR_SIN_AVAL` | Sí, al cerrar las fases 2 y 3 |
 | **4. Mis ventas y Entregas (RSI-6 y RSI-5)** | Anular ventas pendientes; listar pendientes y despachar | |
+| *Opcional:* **Eventos en tiempo real** | El backend avisa al front cuando cambia el stock (SSE) y las pantallas se recargan solas; sustituye al botón «Actualizar». Ver abajo | Sí |
 | **5. Cierre** | Pruebas con Vitest de servicios y guardia, README, capturas, recorrido completo contra Docker | Sí, revisión final |
+| **6. Modo demostración** | Panel activable que muestra las llamadas reales a la API (método, URL y estado) para enseñar que el cliente consume el backend | Sí |
+| **7. Playwright** | Recorridos como usuario (entrar, vender, despachar) con video y capturas como evidencia; se ven en el navegador | Sí |
+
+### Fase opcional: eventos en tiempo real
+
+Hoy cada pantalla pide los datos al entrar, y «Actualizar» sirve para refrescar sin salir. La solución de fondo es que el
+backend avise cuando algo cambia:
+
+1. Bodega y Ventas publican un **evento de dominio** al reservar, despachar, anular, registrar una entrada o un ajuste.
+2. La fachada lo reenvía por **SSE** (Server-Sent Events) solo a los roles que corresponde.
+3. El front escucha con `EventSource` y, al recibir el aviso, **vuelve a pedir la lista**. El evento dice «algo cambió»,
+   no lleva el dato: el backend sigue siendo la única fuente de verdad.
+
+No cambia la corrección (el servidor valida el stock al vender), solo la experiencia. Implica tocar el backend, que ya
+está cerrado, y resolver conexiones abiertas, reconexión y permisos por rol; el cliente de escritorio tendría que
+implementarlo aparte. Se hará solo si sobra tiempo después de la fase 4.
 
 ## Cómo se prueba
 
