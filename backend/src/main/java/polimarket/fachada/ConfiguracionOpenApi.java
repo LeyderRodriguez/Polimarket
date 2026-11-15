@@ -2,6 +2,9 @@ package polimarket.fachada;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.StringSchema;
+import java.math.BigDecimal;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +12,13 @@ import org.springframework.context.annotation.Configuration;
 /** Datos generales de la documentación interactiva de la API. */
 @Configuration
 class ConfiguracionOpenApi {
+
+    static {
+        // Los montos viajan como texto («5000.00») para no perder precisión en los clientes. Sin esto, el contrato
+        // publicaría un número y los tipos que los clientes generan a partir de él no coincidirían con la respuesta.
+        SpringDocUtils.getConfig().replaceWithSchema(BigDecimal.class,
+                new StringSchema().example("5000.00").description("Monto en texto con dos decimales"));
+    }
 
     @Bean
     OpenAPI documentacionDeLaApi(
