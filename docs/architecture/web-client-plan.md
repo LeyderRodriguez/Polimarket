@@ -68,9 +68,9 @@ Cada fase termina con algo que funciona contra el backend real y con una revisi�
 | **3. Nueva venta (RSI-3)** *(hecha)* | Registrar el cliente (buscar tercero, registrarlo si no existe, preferencias), armar el carrito, confirmar; errores `STOCK_INSUFICIENTE` y `VENDEDOR_SIN_AVAL` | Sí, al cerrar las fases 2 y 3 |
 | **4. Mis ventas y Entregas (RSI-6 y RSI-5)** *(hecha)* | Anular ventas pendientes; listar pendientes y despachar, con confirmación en la propia fila | |
 | *Opcional:* **Eventos en tiempo real** | El backend avisa al front cuando cambia el stock (SSE) y las pantallas se recargan solas; sustituye al botón «Actualizar». Ver abajo | Sí |
-| **5. Cierre** | Pruebas con Vitest de servicios y guardia, README, capturas, recorrido completo contra Docker | Sí, revisión final |
+| **5. Cierre** *(hecha)* | Recorrido completo contra Docker con cada rol, capturas en [docs/evidence/web-client/](../evidence/web-client/README.md), README y revisión final | Sí, revisión final |
 | **6. Modo demostración** | Panel activable que muestra las llamadas reales a la API (método, URL y estado) para enseñar que el cliente consume el backend | Sí |
-| **7. Playwright** | Recorridos como usuario (entrar, vender, despachar) con video y capturas como evidencia; se ven en el navegador | Sí |
+| **7. Playwright** *(descartada)* | Se cubre con el recorrido hecho en un navegador real y las capturas de la fase 5; no se mantiene un script de extremo a extremo | — |
 
 ### Fase opcional: eventos en tiempo real
 
