@@ -1,7 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { proveedoresDePrueba } from '../../core/testing/ayudas';
+import { esperarTurno, proveedoresDePrueba } from '../../core/testing/ayudas';
 import { Login } from './login';
 
 describe('Login', () => {
@@ -14,8 +14,6 @@ describe('Login', () => {
     campo.value = valor;
     campo.dispatchEvent(new Event('input'));
   };
-  // Las promesas de `entrar()` no las rastrea Angular: se deja pasar un turno para que terminen antes de comprobar.
-  const esperarTurno = () => new Promise<void>((resolver) => setTimeout(resolver));
   const enviar = async () => {
     el.querySelector('form')!.dispatchEvent(new Event('submit'));
     await fixture.whenStable();

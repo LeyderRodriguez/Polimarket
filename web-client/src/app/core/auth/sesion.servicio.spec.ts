@@ -2,10 +2,8 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import type { ErrorApi } from '../api/tipos';
-import { iniciarComo, proveedoresDePrueba } from '../testing/ayudas';
+import { esperarTurno, iniciarComo, proveedoresDePrueba } from '../testing/ayudas';
 import { SesionServicio } from './sesion.servicio';
-
-const esperarTurno = () => new Promise<void>((resolver) => setTimeout(resolver));
 
 describe('SesionServicio', () => {
   let sesion: SesionServicio;

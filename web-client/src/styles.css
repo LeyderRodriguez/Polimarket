@@ -74,6 +74,16 @@ h3 {
   margin: 0;
 }
 
+/* Texto que solo leen los lectores de pantalla (títulos de tablas, por ejemplo) */
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .sub {
   color: var(--muted);
   margin: 2px 0 0;
@@ -165,4 +175,98 @@ button:focus-visible {
   font-size: 12px;
   font-weight: 500;
   margin-right: 4px;
+}
+
+/* Estructura común de una pantalla: cabecera con herramientas y, debajo, el contenido */
+.pantalla {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.pantalla h2 {
+  font-size: 1.35rem;
+}
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+}
+.herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tablas */
+.tabla {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-x: auto;
+  background: var(--win);
+}
+.tabla table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.tabla th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--soft);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.tabla td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.tabla tr:last-child td {
+  border-bottom: 0;
+}
+.tabla .num {
+  text-align: right;
+  white-space: nowrap;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.tabla .codigo {
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.tabla .vacio {
+  color: var(--muted);
+  padding: 14px 12px;
+}
+
+/* Etiquetas de estado */
+.etiqueta {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 1px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.etiqueta.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.etiqueta.warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.etiqueta.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
 }

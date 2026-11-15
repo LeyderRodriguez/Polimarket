@@ -7,6 +7,8 @@ import type { components } from './schema';
 export type Perfil = components['schemas']['PerfilDto'];
 export type SolicitudLogin = components['schemas']['SolicitudLogin'];
 export type Rol = Perfil['rol'];
+/** Un producto con su stock físico, lo reservado por ventas pendientes y lo disponible. Los montos viajan como texto. */
+export type ProductoDisponible = components['schemas']['DisponibilidadDto'];
 
 /** Forma de todos los errores que devuelve el backend (`{ codigo, mensaje }`) más el estado HTTP. */
 export interface ErrorApi {

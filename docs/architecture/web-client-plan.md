@@ -64,7 +64,7 @@ Cada fase termina con algo que funciona contra el backend real y con una revisi�
 |---|---|---|
 | **0. Entorno** *(hecha)* | Node 24 LTS, `npm ci`, proxy a `:8080`, tipos generados desde OpenAPI, pruebas en verde | — |
 | **1. Base** *(hecha)* | Cliente HTTP con interceptor, servicio de autenticación, guardia por rol, menú según rol, aviso de errores, login funcionando | Sí, al cerrarla |
-| **2. Disponibilidad (RSI-2)** | Lista de productos con físico, reservado y disponible, búsqueda por nombre | |
+| **2. Disponibilidad (RSI-2)** *(hecha)* | Lista de productos con físico, reservado y disponible, búsqueda por nombre o código sin importar tildes | |
 | **3. Nueva venta (RSI-3)** | Buscar o registrar tercero y cliente, armar el carrito, confirmar; errores `STOCK_INSUFICIENTE` y `VENDEDOR_SIN_AVAL` | Sí, al cerrar las fases 2 y 3 |
 | **4. Mis ventas y Entregas (RSI-6 y RSI-5)** | Anular ventas pendientes; listar pendientes y despachar | |
 | **5. Cierre** | Pruebas con Vitest de servicios y guardia, README, capturas, recorrido completo contra Docker | Sí, revisión final |

@@ -13,6 +13,12 @@ export const proveedoresDePrueba = () => [
   provideHttpClientTesting(),
 ];
 
+/**
+ * Deja pasar un turno del navegador. Las promesas de los componentes (`await firstValueFrom(...)`) no las rastrea
+ * Angular, así que las pruebas esperan un momento antes de comprobar lo que se pintó.
+ */
+export const esperarTurno = () => new Promise<void>((resolver) => setTimeout(resolver));
+
 /** Deja la sesión abierta con ese rol, como si el backend hubiera reconocido la cookie. */
 export async function iniciarComo(rol: Rol): Promise<void> {
   const sesion = TestBed.inject(SesionServicio);

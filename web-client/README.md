@@ -52,6 +52,7 @@ Nombres en `kebab-case`; un componente son cuatro archivos (`.ts`, `.html`, `.cs
 
 ## Estado
 
-Fases 0 y 1 hechas: inicio y cierre de sesión, sesión que sobrevive a recargar la página, guardias por rol, menú lateral
-y manejo central de errores. Las pantallas de negocio son marcadores que se llenan en las fases 2 a 4; el plan está en
+Fases 0 a 2 hechas: inicio y cierre de sesión, sesión que sobrevive a recargar la página, guardias por rol, menú lateral,
+manejo central de errores y la pantalla de **Disponibilidad** (RSI-2). Las demás pantallas de negocio son marcadores que
+se llenan en las fases 3 y 4; el plan está en
 [docs/architecture/web-client-plan.md](../docs/architecture/web-client-plan.md).
