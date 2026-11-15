@@ -565,7 +565,11 @@ export interface components {
             ventaId: number;
             /** @enum {string} */
             estado: "PENDIENTE_ENTREGA" | "DESPACHADA" | "ANULADA";
-            total: number;
+            /**
+             * @description Monto en texto con dos decimales
+             * @example 5000.00
+             */
+            total: string;
             /** @enum {string} */
             reservaEstado: "ACTIVA" | "CONSUMIDA" | "LIBERADA";
         };
@@ -677,7 +681,11 @@ export interface components {
             nombre: string;
             descripcion?: string;
             categoria?: string;
-            precioVenta: number;
+            /**
+             * @description Monto en texto con dos decimales
+             * @example 5000.00
+             */
+            precioVenta: string;
             /** Format: int32 */
             stockMinimo?: number;
         };
@@ -688,7 +696,11 @@ export interface components {
             nombre: string;
             descripcion: string;
             categoria: string;
-            precioVenta: number;
+            /**
+             * @description Monto en texto con dos decimales
+             * @example 5000.00
+             */
+            precioVenta: string;
             /** Format: int32 */
             stockMinimo: number;
         };
@@ -700,7 +712,11 @@ export interface components {
             /** Format: int64 */
             proveedorId: number;
             referencia?: string;
-            costoUnitario?: number;
+            /**
+             * @description Monto en texto con dos decimales
+             * @example 5000.00
+             */
+            costoUnitario?: string;
         };
         MovimientoDto: {
             /** Format: int64 */
@@ -758,7 +774,11 @@ export interface components {
             nombre: string;
             descripcion: string;
             categoria: string;
-            precioVenta: number;
+            /**
+             * @description Monto en texto con dos decimales
+             * @example 5000.00
+             */
+            precioVenta: string;
             /** Format: int32 */
             stockMinimo: number;
         };
@@ -788,7 +808,11 @@ export interface components {
             cliente: string;
             /** @enum {string} */
             estado: "PENDIENTE_ENTREGA" | "DESPACHADA" | "ANULADA";
-            total: number;
+            /**
+             * @description Monto en texto con dos decimales
+             * @example 5000.00
+             */
+            total: string;
         };
         VendedorDto: {
             /** Format: int64 */
@@ -817,7 +841,11 @@ export interface components {
             id: number;
             codigo: string;
             nombre: string;
-            precio: number;
+            /**
+             * @description Monto en texto con dos decimales
+             * @example 5000.00
+             */
+            precio: string;
             /** Format: int32 */
             stockFisico: number;
             /** Format: int32 */
