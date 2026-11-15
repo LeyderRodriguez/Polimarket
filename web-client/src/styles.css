@@ -115,6 +115,10 @@ h3 {
   opacity: 0.45;
   cursor: not-allowed;
 }
+.btn.peligro {
+  color: var(--bad);
+  border-color: color-mix(in srgb, var(--bad) 40%, var(--line));
+}
 
 /* Campos de formulario */
 label.f {

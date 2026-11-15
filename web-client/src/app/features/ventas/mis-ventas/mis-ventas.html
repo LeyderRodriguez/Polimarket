@@ -1,2 +1,62 @@
-<h2>Mis ventas</h2>
-<p class="sub">Esta pantalla se construye en la fase 4.</p>
+<section class="pantalla">
+  <div class="cabecera">
+    <div>
+      <h2>Mis ventas</h2>
+      <p class="sub">Puede anular una venta mientras esté pendiente de entrega; el stock reservado se libera.</p>
+    </div>
+    <div class="herramientas">
+      <button type="button" class="btn" (click)="cargar()" [disabled]="cargando()">Actualizar</button>
+    </div>
+  </div>
+
+  @if (aviso(); as mensaje) {
+    <div class="banner ok" role="status">{{ mensaje }}</div>
+  }
+  <app-aviso-error [error]="errorCarga()" />
+  <app-aviso-error [error]="errorAccion()" />
+
+  <div class="tabla">
+    <table>
+      <caption class="solo-lectores">Ventas del vendedor, de la más reciente a la más antigua</caption>
+      <thead>
+        <tr>
+          <th class="num">N.º</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th class="num">Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (venta of ordenadas(); track venta.ventaId) {
+          <tr>
+            <td class="num">{{ venta.ventaId }}</td>
+            <td>{{ venta.cliente }}</td>
+            <td>
+              <span [class]="'etiqueta ' + etiqueta(venta.estado).clase">{{ etiqueta(venta.estado).texto }}</span>
+            </td>
+            <td class="num">{{ pesos(venta.total) }}</td>
+            <td class="num">
+              @if (venta.estado === 'PENDIENTE_ENTREGA') {
+                <app-accion-confirmada
+                  texto="Anular"
+                  [pregunta]="'¿Anular la venta #' + venta.ventaId + '?'"
+                  textoConfirmar="Sí, anular"
+                  [peligro]="true"
+                  [deshabilitado]="anulando()"
+                  (confirmada)="anular(venta.ventaId)"
+                />
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="vacio">
+              {{ cargando() ? 'Cargando…' : errorCarga() ? 'No se pudieron cargar las ventas.' : 'Aún no tiene ventas.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

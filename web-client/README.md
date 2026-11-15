@@ -52,7 +52,8 @@ Nombres en `kebab-case`; un componente son cuatro archivos (`.ts`, `.html`, `.cs
 
 ## Estado
 
-Fases 0 a 3 hechas: inicio y cierre de sesión, sesión que sobrevive a recargar la página, guardias por rol, menú lateral,
-manejo central de errores, **Disponibilidad** (RSI-2), **Clientes** (registro en tres pasos) y **Nueva venta** (RSI-3, con
-carrito). **Mis ventas** y **Entregas** son marcadores que se llenan en la fase 4; el plan está en
+Fases 0 a 4 hechas: inicio y cierre de sesión, sesión que sobrevive a recargar la página, guardias por rol, menú lateral,
+manejo central de errores, **Disponibilidad** (RSI-2), **Clientes** (registro en tres pasos), **Nueva venta** (RSI-3, con
+carrito), **Mis ventas** (RSI-6, anular) y **Entregas** (RSI-5, despachar). Las acciones irreversibles piden confirmación en
+la propia fila. Falta el cierre (fases 5 a 7); el plan está en
 [docs/architecture/web-client-plan.md](../docs/architecture/web-client-plan.md).

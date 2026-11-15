@@ -19,6 +19,11 @@ export type TipoPersona = SolicitudTercero['tipo'];
 
 export type SolicitudVenta = components['schemas']['SolicitudVenta'];
 export type Venta = components['schemas']['VentaDto'];
+/** Una venta en la lista del vendedor: sin detalle de productos, con su estado y total. */
+export type VentaResumen = components['schemas']['VentaResumenDto'];
+/** Una venta que espera entrega: qué llevar, a quién y a dónde. */
+export type VentaPendiente = components['schemas']['VentaPendienteDto'];
+export type Entrega = components['schemas']['EntregaDto'];
 
 /** Forma de todos los errores que devuelve el backend (`{ codigo, mensaje }`) más el estado HTTP. */
 export interface ErrorApi {
