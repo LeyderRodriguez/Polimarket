@@ -1,6 +1,11 @@
 package polimarket.fachada;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -24,25 +29,26 @@ import polimarket.bodega.api.NuevoProducto;
 import polimarket.bodega.api.ProductoDto;
 import polimarket.seguridad.api.UsuarioSesion;
 
+@Tag(name = "Productos")
 @RestController
 @RequestMapping("/api/productos")
 class ProductosController {
 
     record SolicitudProducto(
-            @NotBlank String codigo,
-            @NotBlank String nombre,
-            String descripcion,
-            String categoria,
-            @NotNull @DecimalMin("0") BigDecimal precioVenta,
-            @Min(0) int stockMinimo) {
+            @NotBlank @Size(max = 30) String codigo,
+            @NotBlank @Size(max = 120) String nombre,
+            @Size(max = 300) String descripcion,
+            @Size(max = 60) String categoria,
+            @NotNull @DecimalMin("0") @Digits(integer = 10, fraction = 2) BigDecimal precioVenta,
+            @Min(0) @Max(1_000_000) int stockMinimo) {
     }
 
     record SolicitudCambioProducto(
-            String nombre,
-            String descripcion,
-            String categoria,
-            @DecimalMin("0") BigDecimal precioVenta,
-            @Min(0) Integer stockMinimo) {
+            @Size(max = 120) String nombre,
+            @Size(max = 300) String descripcion,
+            @Size(max = 60) String categoria,
+            @DecimalMin("0") @Digits(integer = 10, fraction = 2) BigDecimal precioVenta,
+            @Min(0) @Max(1_000_000) Integer stockMinimo) {
     }
 
     private final FachadaPoliMarket fachada;
@@ -51,12 +57,14 @@ class ProductosController {
         this.fachada = fachada;
     }
 
+    @Operation(summary = "Productos con stock físico, reservado y disponible", description = "Roles: BODEGA, VENDEDOR con aval.")
     @GetMapping
     @PreAuthorize("hasAnyRole('BODEGA','VENDEDOR')")
     List<DisponibilidadDto> listar(@AuthenticationPrincipal UsuarioSesion usuario) {
         return fachada.listarDisponibilidad(usuario);
     }
 
+    @Operation(summary = "Crear un producto", description = "Roles: BODEGA.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('BODEGA')")
@@ -65,6 +73,7 @@ class ProductosController {
                 s.precioVenta(), s.stockMinimo()));
     }
 
+    @Operation(summary = "Actualizar un producto (solo los campos que se envían)", description = "Roles: BODEGA.")
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('BODEGA')")
     ProductoDto actualizar(@PathVariable long id, @Valid @RequestBody SolicitudCambioProducto s) {

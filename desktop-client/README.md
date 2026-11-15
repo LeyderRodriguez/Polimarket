@@ -12,7 +12,8 @@ Estructura base para quien desarrolle este cliente. Solo habla con la API HTTP d
 - URL base en desarrollo: `http://localhost:8080`.
 - Sesión: cookie del servidor (`JSESSIONID`). El cliente debe guardarla y reenviarla.
 - CSRF: tras el login, leer la cookie `XSRF-TOKEN` y enviarla en el encabezado `X-XSRF-TOKEN` en las peticiones POST, PATCH y DELETE.
-- Endpoints, ejemplos de solicitud y respuesta y códigos de error: sección 6 de [docs/propuesta-polimarket.html](../docs/propuesta-polimarket.html).
+- **Empieza por [docs/guia-clientes.md](../docs/guia-clientes.md)**: cómo levantar el backend, cómo manejar la sesión y el token CSRF desde C++ y qué pantalla llama a qué.
+- Todos los endpoints con ejemplos y códigos de error: [docs/api-rest.md](../docs/api-rest.md), o Swagger UI en `http://localhost:8080/swagger-ui.html`.
 
 ## Pendiente
 

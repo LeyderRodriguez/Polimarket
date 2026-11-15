@@ -1,6 +1,9 @@
 package polimarket.fachada;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import polimarket.terceros.api.NuevoTercero;
 import polimarket.terceros.api.TerceroDto;
 import polimarket.terceros.api.TipoTercero;
 
+@Tag(name = "Terceros")
 @RestController
 @RequestMapping("/api/terceros")
 @PreAuthorize("hasAnyRole('RECURSOS_HUMANOS','VENDEDOR')")
@@ -25,14 +29,14 @@ class TercerosController {
 
     record SolicitudTercero(
             @NotNull TipoTercero tipo,
-            @NotBlank String tipoDocumento,
-            @NotBlank String numeroDocumento,
-            String nombres,
-            String apellidos,
-            String razonSocial,
-            String telefono,
-            String correo,
-            String direccion) {
+            @NotBlank @Size(max = 10) String tipoDocumento,
+            @NotBlank @Size(max = 30) String numeroDocumento,
+            @Size(max = 100) String nombres,
+            @Size(max = 100) String apellidos,
+            @Size(max = 150) String razonSocial,
+            @Size(max = 30) String telefono,
+            @Size(max = 150) String correo,
+            @Size(max = 200) String direccion) {
     }
 
     private final FachadaPoliMarket fachada;
@@ -41,12 +45,14 @@ class TercerosController {
         this.fachada = fachada;
     }
 
+    @Operation(summary = "Buscar un tercero por documento (evita duplicados)", description = "Roles: RECURSOS_HUMANOS, VENDEDOR con aval.")
     @GetMapping
     TerceroDto buscar(@AuthenticationPrincipal UsuarioSesion usuario, @RequestParam String tipoDocumento,
             @RequestParam String numeroDocumento) {
         return fachada.buscarTercero(usuario, tipoDocumento, numeroDocumento);
     }
 
+    @Operation(summary = "Registrar un tercero (persona o empresa)", description = "Roles: RECURSOS_HUMANOS, VENDEDOR con aval.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     TerceroDto registrar(@AuthenticationPrincipal UsuarioSesion usuario, @Valid @RequestBody SolicitudTercero s) {

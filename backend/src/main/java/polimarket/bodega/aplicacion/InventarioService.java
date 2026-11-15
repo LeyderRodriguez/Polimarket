@@ -80,7 +80,9 @@ class InventarioService implements IInventario {
     @Override
     @Transactional(readOnly = true)
     public List<ProductoDto> consultarProductos(Collection<Long> productoIds) {
-        Map<Long, Existencia> existenciaPorProducto = existenciasPorProducto();
+        // Solo las existencias de los productos pedidos, no toda la tabla.
+        Map<Long, Existencia> existenciaPorProducto = existencias.findByBodegaIdAndProductoIdIn(BODEGA_PRINCIPAL, productoIds)
+                .stream().collect(Collectors.toMap(Existencia::getProductoId, Function.identity()));
         return productos.findAllById(productoIds).stream()
                 .map(p -> aDto(p, existenciaPorProducto.get(p.getId())))
                 .toList();

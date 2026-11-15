@@ -1,5 +1,7 @@
 package polimarket.fachada;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +22,7 @@ import polimarket.seguridad.api.RolUsuario;
 import polimarket.seguridad.api.UsuarioDto;
 import polimarket.seguridad.api.UsuarioSesion;
 
+@Tag(name = "Cuentas (Recursos Humanos)")
 @RestController
 @RequestMapping("/api/usuarios")
 @PreAuthorize("hasRole('RECURSOS_HUMANOS')")
@@ -27,8 +30,8 @@ class UsuariosController {
 
     record SolicitudCuenta(
             @NotNull Long terceroId,
-            @NotBlank String correo,
-            @NotBlank @Size(min = 8) String contrasenaInicial,
+            @NotBlank @Size(max = 150) String correo,
+            @NotBlank @Size(min = 8, max = 72) String contrasenaInicial, // BCrypt solo admite 72 bytes
             @NotNull RolUsuario rol) {
     }
 
@@ -39,25 +42,29 @@ class UsuariosController {
     }
 
     /** El rol no se puede cambiar: si llega en el cuerpo se ignora. Para cambiarlo se crea otra cuenta. */
-    record SolicitudCambioCuenta(@NotBlank String correo) {
+    record SolicitudCambioCuenta(@NotBlank @Size(max = 150) String correo) {
     }
 
+    @Operation(summary = "Crear una cuenta con rol. Si es VENDEDOR queda con aval PENDIENTE", description = "Roles: RECURSOS_HUMANOS.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CuentaCreadaDto crear(@Valid @RequestBody SolicitudCuenta s) {
         return fachada.registrarCuenta(s.terceroId(), s.correo(), s.contrasenaInicial(), s.rol());
     }
 
+    @Operation(summary = "Listar las cuentas, sin contraseñas", description = "Roles: RECURSOS_HUMANOS.")
     @GetMapping
     List<CuentaDto> listar() {
         return fachada.listarCuentas();
     }
 
+    @Operation(summary = "Cambiar el correo de una cuenta (el rol no se puede cambiar)", description = "Roles: RECURSOS_HUMANOS.")
     @PatchMapping("/{id}")
     UsuarioDto actualizar(@PathVariable long id, @Valid @RequestBody SolicitudCambioCuenta s) {
         return fachada.actualizarCuenta(id, s.correo());
     }
 
+    @Operation(summary = "Desactivar una cuenta y cerrar sus sesiones", description = "Roles: RECURSOS_HUMANOS.")
     @PostMapping("/{id}/desactivacion")
     UsuarioDto desactivar(@AuthenticationPrincipal UsuarioSesion solicitante, @PathVariable long id) {
         return fachada.desactivarCuenta(solicitante, id);

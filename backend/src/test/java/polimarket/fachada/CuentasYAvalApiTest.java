@@ -107,6 +107,24 @@ class CuentasYAvalApiTest extends BaseApiTest {
     }
 
     @Test
+    void unTipoDeContenidoNoSoportadoDa415ConElFormatoComunYNoUn500() throws Exception {
+        mvc.perform(post("/api/auth/login").contentType(MediaType.TEXT_PLAIN).content("correo=x"))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.codigo").value("FORMATO_NO_SOPORTADO"));
+    }
+
+    @Test
+    void losTextosDemasiadoLargosSeRechazanComoDatosInvalidosNoComoConflicto() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+
+        mvc.perform(post("/api/terceros").session(rh).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipo\":\"NATURAL\",\"tipoDocumento\":\"CC\",\"numeroDocumento\":\"1\",\"nombres\":\""
+                                + "x".repeat(300) + "\",\"apellidos\":\"Y\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("DATOS_INVALIDOS"));
+    }
+
+    @Test
     void elClienteWebDeAngularPuedeLlamarConCredenciales() throws Exception {
         mvc.perform(options("/api/auth/login")
                         .header("Origin", "http://localhost:4200")

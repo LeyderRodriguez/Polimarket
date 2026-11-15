@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Recorrido manual de RSI-2 a RSI-6 con los datos de demostración (perfil dev, base recién creada).
 #   docker compose up --build            (todo en Docker; no hace falta JDK)
-#   o bien: docker compose up -d postgres  y  cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+#   o bien: docker compose up -d postgres  y  cd backend && ./mvnw spring-boot:run
 #   bash scripts/probar-flujo-venta.sh          (en Git Bash, WSL o Linux/macOS)
 # Muestra qué ve cada rol: vendedora, bodega y entregas, cada uno con su propia sesión.
 BASE="${BASE:-http://localhost:8080}"

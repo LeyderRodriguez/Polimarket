@@ -9,6 +9,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -81,9 +83,20 @@ class ManejadorErrores {
                 .body(new ErrorApi("SIN_PERMISO", "No tiene permiso para esta acción."));
     }
 
-    /** Último recurso: nunca se devuelve el detalle interno; queda en el registro del servidor. */
+    /**
+     * Último recurso. Los errores estándar de Spring MVC que no tienen manejador propio (por ejemplo 415) implementan
+     * {@code ErrorResponse}: conservan su estado y salen en el formato común, no como 500. Todo lo demás es un fallo
+     * inesperado: nunca se devuelve el detalle interno, queda en el registro del servidor.
+     */
     @ExceptionHandler(Exception.class)
     ResponseEntity<ErrorApi> inesperado(Exception e) {
+        if (e instanceof ErrorResponse respuesta && respuesta.getStatusCode().is4xxClientError()) {
+            HttpStatusCode estado = respuesta.getStatusCode();
+            return ResponseEntity.status(estado).body(switch (estado.value()) {
+                case 406, 415 -> new ErrorApi("FORMATO_NO_SOPORTADO", "Use application/json en la solicitud y en la respuesta.");
+                default -> new ErrorApi("SOLICITUD_INVALIDA", "La solicitud no es válida.");
+            });
+        }
         LOG.error("Error inesperado", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorApi("ERROR_INTERNO", "Ocurrió un error inesperado."));

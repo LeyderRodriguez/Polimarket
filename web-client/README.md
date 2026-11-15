@@ -13,8 +13,9 @@ Cada pantalla debe consumir la API de verdad y mostrar los errores del servidor.
 
 - URL base en desarrollo: `http://localhost:8080`.
 - Sesión: cookie del servidor. Hay que enviar las peticiones con credenciales (`withCredentials`).
-- CSRF: Spring publica la cookie `XSRF-TOKEN`; Angular la lee y envía `X-XSRF-TOKEN` en las peticiones que modifican datos.
-- Endpoints, ejemplos de solicitud y respuesta y códigos de error: sección 6 de [docs/propuesta-polimarket.html](../docs/propuesta-polimarket.html).
+- CSRF: Spring publica la cookie `XSRF-TOKEN` y espera su valor en el encabezado `X-XSRF-TOKEN` en los `POST` y `PATCH`. Angular lo hace solo únicamente con rutas relativas (usa el proxy de `ng serve`); con otro origen hay que ponerlo con un interceptor. La guía lo explica.
+- **Empieza por [docs/guia-clientes.md](../docs/guia-clientes.md)**: cómo levantar el backend, el proxy de Angular, el token CSRF y qué pantalla llama a qué.
+- Todos los endpoints con ejemplos y códigos de error: [docs/api-rest.md](../docs/api-rest.md), o Swagger UI en `http://localhost:8080/swagger-ui.html`.
 
 ## Pendiente
 

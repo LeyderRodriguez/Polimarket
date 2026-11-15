@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Recorrido manual de RSI-1 contra el backend en marcha (perfil dev).
 #   docker compose up --build            (todo en Docker; no hace falta JDK)
-#   o bien: docker compose up -d postgres  y  cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+#   o bien: docker compose up -d postgres  y  cd backend && ./mvnw spring-boot:run
 #   bash scripts/probar-api.sh          (en Git Bash, WSL o Linux/macOS)
 BASE="${BASE:-http://localhost:8080}"
 CLAVE="${CLAVE:-Demo-1234}"            # clave ficticia del perfil dev

@@ -11,7 +11,7 @@ Backend en Java con Spring Boot organizado por componentes de negocio (Seguridad
 | `backend/` | Java 25, Spring Boot 4.1.2, Maven. Un paquete por componente. |
 | `web-client/` | Cliente Angular (Ventas y Entregas). Estructura base y contrato de la API. |
 | `desktop-client/` | Cliente C++ (Bodega y Recursos Humanos). Estructura base y contrato de la API. |
-| `docs/` | Propuesta de implementación y diagramas PlantUML. |
+| `docs/` | Guía para los clientes, API REST, alcance, esquemas de la base y diagramas PlantUML. |
 | `scripts/` | Recorridos manuales con `curl` para probar la API en marcha. |
 
 ## Requisitos previos
@@ -58,7 +58,7 @@ Comandos útiles:
 | Ver lo que escribe el backend | `docker compose logs -f backend` |
 | Detener todo conservando los datos | `docker compose down` |
 | Empezar de cero (borra la base) | `docker compose down -v` |
-| Backend sin datos de demostración | `SPRING_PROFILES_ACTIVE= docker compose up --build` |
+| Backend sin datos de demostración | `POLIMARKET_DEMO_CARGAR_DATOS=false docker compose up --build` |
 
 ## Desarrollar el backend (con JDK 25)
 
@@ -67,10 +67,10 @@ Con esto se compila y se reinicia más rápido que con Docker. Se levanta solo l
 ```bash
 docker compose up -d postgres   # PostgreSQL en 127.0.0.1:5432
 cd backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw spring-boot:run
 ```
 
-En Windows PowerShell el último comando es `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"`.
+En Windows PowerShell el último comando es `.\mvnw.cmd spring-boot:run`.
 Detener el backend: `Ctrl+C`. Si el backend de Docker está encendido, hay que apagarlo antes (`docker compose stop backend`)
 porque los dos usan el puerto 8080.
 
@@ -90,10 +90,10 @@ todos los clientes deben apuntar a un mismo backend.
 | `Port 8080 was already in use` | Hay otro backend encendido (de Docker o de `./mvnw`): detener uno de los dos. |
 | Cambié código y no se nota | Docker usa la imagen vieja: `docker compose up --build -d backend`. |
 
-## Cuentas de demostración (perfil `dev`)
+## Cuentas de demostración
 
-Con `-Dspring-boot.run.profiles=dev` se cargan datos ficticios, una sola vez. La clave ficticia está en
-`backend/src/main/resources/application-dev.yml`; es solo para desarrollo.
+Al arrancar la primera vez se cargan datos ficticios (una sola vez). La clave ficticia está en
+`backend/src/main/resources/application.yml`; es solo para desarrollo.
 
 | Correo | Rol | Notas |
 |---|---|---|
@@ -114,5 +114,8 @@ bash scripts/probar-flujo-venta.sh  # RSI-2 a RSI-6: vender, reservar, anular y 
 
 ## Documentación
 
-- [Propuesta de implementación](docs/propuesta-polimarket.html): arquitectura, API, reglas y decisiones.
+- **[docs/guia-clientes.md](docs/guia-clientes.md): para el frontend. Cómo levantar el backend, sesión, CSRF y qué pantalla llama a qué.**
+- [docs/api-rest.md](docs/api-rest.md): referencia de todos los endpoints (y Swagger UI en `http://localhost:8080/swagger-ui.html`).
+- [docs/alcance.md](docs/alcance.md): qué hace el backend, los componentes, los roles y las reglas de negocio.
+- [docs/esquemas.md](docs/esquemas.md): base de datos, esquemas por componente y migraciones.
 - `docs/diagramas/`: código PlantUML de los diagramas de clases y de componentes.

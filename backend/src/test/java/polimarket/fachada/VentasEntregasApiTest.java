@@ -100,6 +100,21 @@ class VentasEntregasApiTest extends BaseApiTest {
     }
 
     @Test
+    void unaDireccionOPreferenciasInvalidasSeRechazanConUn400() throws Exception {
+        mvc.perform(post("/api/ventas").session(vendedor).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"clienteId\":" + cliente + ",\"direccionEntrega\":\"" + "c".repeat(300)
+                                + "\",\"productos\":[" + linea(producto, 1) + "]}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("DATOS_INVALIDOS"));
+
+        TerceroDto otro = persona("Otro", "Cliente");
+        mvc.perform(post("/api/clientes").session(vendedor).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"terceroId\":" + otro.id() + ",\"preferencias\":[\"a;b\"]}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("DATOS_INVALIDOS"));
+    }
+
+    @Test
     void unVendedorSinAvalNoPuedeVender() throws Exception {
         MvcResult nuevo = crearCuentaPorApi(rh, "Nuevo", "VENDEDOR"); // aval PENDIENTE
         MockHttpSession sinAval = iniciarSesion(correoDe("nuevo", leerId(nuevo, "$.terceroId")));

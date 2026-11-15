@@ -86,6 +86,8 @@ class ConfiguracionSeguridad {
                 .securityContext(contexto -> contexto.securityContextRepository(repositorioDeContexto))
                 .authorizeHttpRequests(rutas -> rutas
                         .requestMatchers("/api/auth/login").permitAll()
+                        // Documentación de la API: solo existe cuando springdoc está habilitado (perfil dev).
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(errores -> errores
                         .authenticationEntryPoint((req, res, e) -> escribir(res, 401, "NO_AUTENTICADO",

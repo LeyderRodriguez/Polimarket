@@ -21,6 +21,7 @@ services:
   backend:
     build: ./backend
     container_name: polimarket-backend
+    restart: unless-stopped             # si el proceso cae, Docker lo levanta de nuevo
     depends_on:
       postgres:
         condition: service_healthy      # el backend espera a que la base esté lista
@@ -29,8 +30,8 @@ services:
       POLIMARKET_DB_URL: jdbc:postgresql://postgres:5432/polimarket
       POLIMARKET_DB_USER: polimarket
       POLIMARKET_DB_PASSWORD: polimarket
-      # Con «dev» se cargan los datos de demostración. Para una base vacía: SPRING_PROFILES_ACTIVE= docker compose up
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE-dev}
+      # Datos de demostración la primera vez. Para una base vacía: POLIMARKET_DEMO_CARGAR_DATOS=false docker compose up
+      POLIMARKET_DEMO_CARGAR_DATOS: ${POLIMARKET_DEMO_CARGAR_DATOS-true}
     ports:
       - "8080:8080"
 

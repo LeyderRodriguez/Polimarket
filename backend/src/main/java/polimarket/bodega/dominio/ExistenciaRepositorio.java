@@ -1,6 +1,7 @@
 package polimarket.bodega.dominio;
 
 import jakarta.persistence.LockModeType;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,8 @@ public interface ExistenciaRepositorio extends JpaRepository<Existencia, Long> {
     List<Existencia> findByBodegaId(Long bodegaId);
 
     Optional<Existencia> findByBodegaIdAndProductoId(Long bodegaId, Long productoId);
+
+    List<Existencia> findByBodegaIdAndProductoIdIn(Long bodegaId, Collection<Long> productoIds);
 
     /** Bloquea la fila hasta terminar la transacción: dos operaciones sobre el mismo producto se atienden una tras otra. */
     @Lock(LockModeType.PESSIMISTIC_WRITE)

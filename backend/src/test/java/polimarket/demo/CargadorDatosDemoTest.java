@@ -7,15 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import polimarket.ContenedorPostgresAislado;
 import polimarket.bodega.api.IInventario;
 import polimarket.recursoshumanos.api.EstadoAval;
 import polimarket.recursoshumanos.api.IGestionPersonal;
 
-/** Con el perfil dev se cargan los datos de demostración y volver a cargarlos no duplica nada. */
-@SpringBootTest
-@ActiveProfiles("dev")
+/** Cuando se piden los datos de demostración se cargan, y volver a cargarlos no duplica nada. */
+@SpringBootTest(properties = "polimarket.demo.cargar-datos=true")
 @Import(ContenedorPostgresAislado.class)
 class CargadorDatosDemoTest {
 

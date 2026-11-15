@@ -1,8 +1,11 @@
 package polimarket.fachada;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,11 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import polimarket.compartido.ExcepcionNegocio;
 import polimarket.seguridad.api.UsuarioSesion;
 
+@Tag(name = "Sesión")
 @RestController
 @RequestMapping("/api/auth")
 class AuthController {
 
-    record SolicitudLogin(@NotBlank String correo, @NotBlank String contrasena) {
+    record SolicitudLogin(@NotBlank @Size(max = 150) String correo, @NotBlank @Size(max = 72) String contrasena) {
     }
 
     private final AuthenticationManager autenticador;
@@ -41,6 +45,7 @@ class AuthController {
         this.fachada = fachada;
     }
 
+    @Operation(summary = "Iniciar sesión: devuelve el perfil y deja la cookie de sesión", description = "Roles: Público.")
     @PostMapping("/login")
     PerfilDto login(@Valid @RequestBody SolicitudLogin solicitud, HttpServletRequest request,
             HttpServletResponse response) {
@@ -61,11 +66,13 @@ class AuthController {
         return fachada.perfil((UsuarioSesion) autenticacion.getPrincipal());
     }
 
+    @Operation(summary = "Quién está autenticado", description = "Roles: Cualquier rol.")
     @GetMapping("/me")
     PerfilDto me(@AuthenticationPrincipal UsuarioSesion usuario) {
         return fachada.perfil(usuario);
     }
 
+    @Operation(summary = "Cerrar sesión", description = "Roles: Cualquier rol.")
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void logout(Authentication autenticacion, HttpServletRequest request, HttpServletResponse response) {

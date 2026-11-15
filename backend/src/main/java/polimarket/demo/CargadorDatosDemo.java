@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import polimarket.bodega.api.IInventario;
@@ -28,14 +27,13 @@ import polimarket.terceros.api.TipoTercero;
 import polimarket.ventas.api.IClientes;
 
 /**
- * Datos ficticios para desarrollo y demostración. Solo corre con el perfil {@code dev} y con
- * {@code polimarket.demo.cargar-datos=true}. Si el tercero de la cuenta inicial ya existe, no hace nada:
+ * Datos ficticios para desarrollo y demostración. Corre con {@code polimarket.demo.cargar-datos=true}
+ * (el valor por defecto; las pruebas lo apagan). Si el tercero de la cuenta inicial ya existe, no hace nada:
  * reiniciar la aplicación no duplica datos ni pisa los cambios.
  *
  * <p>Usa solo las interfaces de los componentes, igual que lo haría cualquier otro consumidor.
  */
 @Component
-@Profile("dev")
 @ConditionalOnProperty(name = "polimarket.demo.cargar-datos", havingValue = "true")
 class CargadorDatosDemo implements ApplicationRunner {
 
