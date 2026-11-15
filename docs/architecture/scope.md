@@ -84,13 +84,16 @@ oculte o muestre es solo comodidad.
 
 | Fuera de alcance | Por qué |
 |---|---|
-| Los clientes (Angular y C++) | Los desarrolla el resto del grupo; el contrato está en esta carpeta |
+| El cliente de escritorio (C++) | Lo desarrolla el resto del grupo; el contrato está en esta carpeta |
 | Cambio de contraseña (RF-25) | No está entre los requisitos seleccionados |
 | Estados de entrega `ENTREGADA` y `FALLIDA` | Se registra el despacho; confirmar la recepción es una ampliación |
 | Varias bodegas | El prototipo usa una sola |
 | Borrar datos | Se desactiva o se anula; no se borra |
 | Paginación en los listados | El volumen del prototipo no lo requiere |
 | HTTPS, límite de intentos de login | Es un sistema de desarrollo local |
+
+El cliente web (Angular) sí está hecho: vive en [`web-client/`](../../web-client/) y consume Disponibilidad, Clientes,
+Nueva venta, Mis ventas y Entregas (RSI-2, RSI-3, RSI-5 y RSI-6). Su plan está en [web-client-plan.md](web-client-plan.md).
 
 ## Cambios frente al documento del grupo
 

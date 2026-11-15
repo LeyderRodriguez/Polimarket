@@ -115,12 +115,11 @@ y Angular pone el token CSRF solo.
 ```json
 { "/api": { "target": "http://localhost:8080", "secure": false } }
 ```
-Arranca con `ng serve --proxy-config proxy.conf.json` y llama a rutas **relativas** (`/api/productos`).
+Se declara en `angular.json` (`serve.options.proxyConfig`) y se arranca con `npm start`. Llama a rutas **relativas**
+(`/api/productos`). **En `web-client/` ya está configurado así**: no hace falta tocar nada.
 
-`app.config.ts`:
-```ts
-provideHttpClient(withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }))
-```
+Angular usa por defecto los mismos nombres que Spring (cookie `XSRF-TOKEN`, encabezado `X-XSRF-TOKEN`), así que
+`provideHttpClient()` basta; solo hay que configurarlo (`withXsrfConfiguration`) si los nombres fueran otros.
 
 **Si llamas a `http://localhost:8080` directamente** (origen distinto), Angular **no** agrega el token CSRF solo:
 tienes que ponerlo tú con un interceptor, y usar `withCredentials: true`. El backend ya acepta el origen
@@ -135,8 +134,9 @@ export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
 };
 ```
 
-**Tip:** Swagger publica el contrato en `/v3/api-docs`. Con `openapi-generator` puedes generar los tipos y el
-servicio HTTP de Angular en vez de escribirlos a mano.
+**Tip:** Swagger publica el contrato en `/v3/api-docs`. `web-client/` genera los tipos desde ahí con
+`npm run api:types` (`openapi-typescript`) en vez de escribirlos a mano; los montos viajan como **texto** (`"5000.00"`) y
+los tipos generados ya lo reflejan.
 
 ## 7. C++
 

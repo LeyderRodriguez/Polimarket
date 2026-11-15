@@ -1,0 +1,29 @@
+<div class="shell">
+  <aside class="menu" aria-label="Menú principal">
+    <div class="marca">PoliMarket<small>{{ etiquetaRol() }}</small></div>
+
+    <nav>
+      @for (opcion of opciones(); track opcion.ruta) {
+        <a
+          [routerLink]="opcion.ruta"
+          routerLinkActive="activo"
+          [routerLinkActiveOptions]="{ exact: opcion.exacta ?? false }"
+          >{{ opcion.texto }}</a
+        >
+      }
+    </nav>
+
+    @if (usuario(); as persona) {
+      <div class="usuario">
+        <b>{{ persona.nombre }}</b>
+        Rol {{ etiquetaRol() }}
+        <app-selector-tema />
+        <button type="button" (click)="salir()">Cerrar sesión</button>
+      </div>
+    }
+  </aside>
+
+  <main class="pagina">
+    <router-outlet />
+  </main>
+</div>

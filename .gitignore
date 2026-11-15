@@ -27,3 +27,7 @@ cmake-build-*/
 # Entorno local
 .env
 *.log
+
+# Sistema operativo
+Thumbs.db
+.DS_Store

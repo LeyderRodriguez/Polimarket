@@ -1,0 +1,61 @@
+import { Component, inject, signal } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import type { ErrorApi } from '../../core/api/tipos';
+import { inicioDe } from '../../core/auth/inicio';
+import { SesionServicio } from '../../core/auth/sesion.servicio';
+import { aErrorApi } from '../../core/http/error-api';
+import { AvisoError } from '../../shared/aviso-error/aviso-error';
+import { SelectorTema } from '../../shared/selector-tema/selector-tema';
+import { CLAVE_DEMO, CUENTAS_DEMO, type CuentaDemo } from './cuentas-demo';
+
+@Component({
+  selector: 'app-login',
+  imports: [ReactiveFormsModule, AvisoError, SelectorTema],
+  templateUrl: './login.html',
+  styleUrl: './login.css',
+})
+export class Login {
+  private readonly sesion = inject(SesionServicio);
+  private readonly router = inject(Router);
+
+  protected readonly form = inject(NonNullableFormBuilder).group({
+    correo: ['', [Validators.required, Validators.email]],
+    contrasena: ['', Validators.required],
+  });
+  protected readonly enCurso = signal(false);
+  protected readonly error = signal<ErrorApi | null>(null);
+
+  protected readonly cuentasWeb = CUENTAS_DEMO.filter((c) => c.cliente === 'web');
+  protected readonly cuentasEscritorio = CUENTAS_DEMO.filter((c) => c.cliente === 'escritorio');
+  /** Si el backend no respondió al abrir la página, se dice aquí en vez de mostrar un login que parece normal. */
+  protected readonly errorServidor = this.sesion.errorRestauracion;
+
+  protected usarCuenta(cuenta: CuentaDemo): void {
+    this.form.setValue({ correo: cuenta.correo, contrasena: CLAVE_DEMO });
+    this.error.set(null);
+  }
+
+  protected invalido(campo: 'correo' | 'contrasena'): boolean {
+    const control = this.form.controls[campo];
+    return control.invalid && (control.touched || control.dirty);
+  }
+
+  protected async entrar(): Promise<void> {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.enCurso.set(true);
+    this.error.set(null);
+    try {
+      const { correo, contrasena } = this.form.getRawValue();
+      const perfil = await this.sesion.iniciarSesion(correo.trim(), contrasena);
+      await this.router.navigateByUrl(inicioDe(perfil.rol));
+    } catch (fallo) {
+      this.error.set(aErrorApi(fallo));
+    } finally {
+      this.enCurso.set(false);
+    }
+  }
+}

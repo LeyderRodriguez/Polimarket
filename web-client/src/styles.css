@@ -1,0 +1,334 @@
+/* Estilos globales: variables de color (claro y oscuro) y piezas que se repiten en todas las pantallas.
+   Lo que es de una sola pantalla va en el .css de su componente. */
+:root {
+  --bg: #eef1f0;
+  --win: #ffffff;
+  --fg: #18211f;
+  --muted: #5d6b68;
+  --line: #d6dddb;
+  --soft: #f5f7f6;
+  --accent: #1f6f6b;
+  --accent-fg: #ffffff;
+  --accent-soft: #dcecea;
+  --side: #1d2b2a;
+  --side-fg: #c9d6d3;
+  --side-on: #2c4341;
+  --ok: #2f7a3e;
+  --ok-bg: #e2f1e5;
+  --warn: #9a6200;
+  --warn-bg: #fbefd6;
+  --bad: #b23a2e;
+  --bad-bg: #f8e1de;
+  --f-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: light;
+}
+
+/* Tema oscuro. Se aplica de dos maneras: cuando el sistema lo pide y la persona no eligió «claro», o cuando eligió
+   «oscuro» con el selector (atributo data-tema en <html>, ver TemaServicio). Los valores están dos veces porque CSS no
+   permite compartir un bloque entre una media query y un selector de atributo. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --bg: #121817;
+    --win: #1a2221;
+    --fg: #e4ebe9;
+    --muted: #93a39f;
+    --line: #2c3836;
+    --soft: #202a29;
+    --accent: #4fb3ab;
+    --accent-fg: #0d1716;
+    --accent-soft: #1f3836;
+    --side: #0e1413;
+    --side-fg: #a9b8b5;
+    --side-on: #22312f;
+    --ok: #7fcf8d;
+    --ok-bg: #1d3323;
+    --warn: #e5b45a;
+    --warn-bg: #3a2e14;
+    --bad: #f08a7e;
+    --bad-bg: #3d1f1b;
+    color-scheme: dark;
+  }
+}
+
+:root[data-tema='oscuro'] {
+  --bg: #121817;
+  --win: #1a2221;
+  --fg: #e4ebe9;
+  --muted: #93a39f;
+  --line: #2c3836;
+  --soft: #202a29;
+  --accent: #4fb3ab;
+  --accent-fg: #0d1716;
+  --accent-soft: #1f3836;
+  --side: #0e1413;
+  --side-fg: #a9b8b5;
+  --side-on: #22312f;
+  --ok: #7fcf8d;
+  --ok-bg: #1d3323;
+  --warn: #e5b45a;
+  --warn-bg: #3a2e14;
+  --bad: #f08a7e;
+  --bad-bg: #3d1f1b;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Texto que solo leen los lectores de pantalla (títulos de tablas, por ejemplo) */
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sub {
+  color: var(--muted);
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+
+/* Botones */
+.btn {
+  font: 500 13px var(--f-body);
+  border: 1px solid var(--line);
+  background: var(--win);
+  color: var(--fg);
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--soft);
+}
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+.btn.primary:hover {
+  filter: brightness(1.08);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn.peligro {
+  color: var(--bad);
+  border-color: color-mix(in srgb, var(--bad) 40%, var(--line));
+}
+
+/* Campos de formulario */
+label.f {
+  display: grid;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+input,
+select,
+textarea {
+  font: 14px var(--f-body);
+  color: var(--fg);
+  background: var(--win);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 10px;
+  width: 100%;
+  min-width: 0;
+}
+input[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+.campo-error {
+  color: var(--bad);
+  font-size: 12px;
+}
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Avisos */
+.banner {
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 13px;
+}
+.banner.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.banner.warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.banner.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.banner code {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+/* Estructura común de una pantalla: cabecera con herramientas y, debajo, el contenido */
+.pantalla {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.pantalla h2 {
+  font-size: 1.35rem;
+}
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+}
+.herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Bloques de formulario */
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  background: var(--win);
+  min-width: 0;
+}
+.panel h3 {
+  font-size: 15px;
+  font-weight: 500;
+}
+.fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Tablas */
+.tabla {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-x: auto;
+  background: var(--win);
+}
+.tabla table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.tabla th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--soft);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.tabla td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.tabla tr:last-child td {
+  border-bottom: 0;
+}
+.tabla .num {
+  text-align: right;
+  white-space: nowrap;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.tabla .codigo {
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.tabla .vacio {
+  color: var(--muted);
+  padding: 14px 12px;
+}
+
+/* Etiquetas de estado */
+.etiqueta {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 1px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.etiqueta.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.etiqueta.warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.etiqueta.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.etiqueta.neutra {
+  background: var(--soft);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}

@@ -30,6 +30,20 @@ class DocumentacionApiTest extends BaseApiTest {
     }
 
     @Test
+    void losMontosSePublicanComoTextoPorqueAsiViajanPorLaRed() throws Exception {
+        // La API no usa números decimales en ningún otro sitio: si aparece uno, un monto volvió a publicarse mal.
+        String contrato = mvc.perform(get("/v3/api-docs")).andReturn().getResponse().getContentAsString();
+        com.jayway.jsonpath.DocumentContext json = com.jayway.jsonpath.JsonPath.parse(contrato);
+
+        java.util.List<String> tipos = json.read("$.components.schemas.*.properties.*.type");
+        org.assertj.core.api.Assertions.assertThat(tipos).doesNotContain("number");
+
+        mvc.perform(get("/v3/api-docs"))
+                .andExpect(jsonPath("$.components.schemas.ProductoDto.properties.precioVenta.type").value("string"))
+                .andExpect(jsonPath("$.components.schemas.VentaDto.properties.total.type").value("string"));
+    }
+
+    @Test
     void todaOperacionTieneResumenParaQueElFrontNoTengaQueAdivinar() throws Exception {
         String contrato = mvc.perform(get("/v3/api-docs")).andReturn().getResponse().getContentAsString();
         com.jayway.jsonpath.DocumentContext json = com.jayway.jsonpath.JsonPath.parse(contrato);
