@@ -34,7 +34,8 @@ npm start          # ng serve en http://localhost:4200 (las llamadas a /api pasa
 | `npm run build` | Compilación de producción |
 | `npm run api:types` | Regenera `src/app/core/api/schema.d.ts` desde el contrato del backend (con el backend en marcha) |
 
-Cuentas de demostración: `ana@polimarket.test` (vendedor), `entregas@polimarket.test`; la clave está en
+La pantalla de inicio de sesión trae **botones de cuentas de demostración** (Ana con aval, Luis sin aval, Entregas, RH y
+Bodega): un clic llena correo y contraseña y solo queda pulsar Entrar. La clave está en
 [docs/guides/clients.md](../docs/guides/clients.md). Las cuentas de RH y Bodega se rechazan: usan el cliente de escritorio.
 
 ## Estructura

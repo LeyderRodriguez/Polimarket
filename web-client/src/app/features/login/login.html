@@ -1,42 +1,55 @@
 <div class="login">
-  <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
-    <div>
-      <h1>Iniciar sesión</h1>
-      <p class="sub">Vendedores y personal de entregas</p>
-    </div>
+  <div class="tarjeta">
+    <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+      <div>
+        <h1>Iniciar sesión</h1>
+        <p class="sub">Vendedores y personal de entregas</p>
+      </div>
 
-    <label class="f">
-      <span>Correo</span>
-      <input
-        id="correo"
-        type="email"
-        formControlName="correo"
-        autocomplete="username"
-        [attr.aria-invalid]="invalido('correo')"
-      />
-      @if (invalido('correo')) {
-        <span class="campo-error">Escriba un correo válido.</span>
-      }
-    </label>
+      <label class="f">
+        <span>Correo</span>
+        <input
+          id="correo"
+          type="email"
+          formControlName="correo"
+          autocomplete="username"
+          [attr.aria-invalid]="invalido('correo')"
+        />
+        @if (invalido('correo')) {
+          <span class="campo-error">Escriba un correo válido.</span>
+        }
+      </label>
 
-    <label class="f">
-      <span>Contraseña</span>
-      <input
-        id="contrasena"
-        type="password"
-        formControlName="contrasena"
-        autocomplete="current-password"
-        [attr.aria-invalid]="invalido('contrasena')"
-      />
-      @if (invalido('contrasena')) {
-        <span class="campo-error">Escriba su contraseña.</span>
-      }
-    </label>
+      <label class="f">
+        <span>Contraseña</span>
+        <input
+          id="contrasena"
+          type="password"
+          formControlName="contrasena"
+          autocomplete="current-password"
+          [attr.aria-invalid]="invalido('contrasena')"
+        />
+        @if (invalido('contrasena')) {
+          <span class="campo-error">Escriba su contraseña.</span>
+        }
+      </label>
 
-    <app-aviso-error [error]="error()" />
+      <app-aviso-error [error]="error()" />
 
-    <button class="btn primary" type="submit" [disabled]="enCurso()">
-      {{ enCurso() ? 'Entrando…' : 'Entrar' }}
-    </button>
-  </form>
+      <button class="btn primary" type="submit" [disabled]="enCurso()">
+        {{ enCurso() ? 'Entrando…' : 'Entrar' }}
+      </button>
+    </form>
+
+    <section class="demo" aria-label="Cuentas de demostración">
+      <p class="sub">Cuentas de demostración: elija una y pulse Entrar.</p>
+      <div class="demo-botones">
+        @for (cuenta of cuentasDemo; track cuenta.correo) {
+          <button type="button" class="chip" [title]="cuenta.detalle" (click)="usarCuenta(cuenta)">
+            {{ cuenta.etiqueta }}
+          </button>
+        }
+      </div>
+    </section>
+  </div>
 </div>

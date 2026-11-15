@@ -6,6 +6,7 @@ import { inicioDe } from '../../core/auth/inicio';
 import { SesionServicio } from '../../core/auth/sesion.servicio';
 import { aErrorApi } from '../../core/http/errores.interceptor';
 import { AvisoError } from '../../shared/aviso-error/aviso-error';
+import { CLAVE_DEMO, CUENTAS_DEMO, type CuentaDemo } from './cuentas-demo';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +24,13 @@ export class Login {
   });
   protected readonly enCurso = signal(false);
   protected readonly error = signal<ErrorApi | null>(null);
+
+  protected readonly cuentasDemo = CUENTAS_DEMO;
+
+  protected usarCuenta(cuenta: CuentaDemo): void {
+    this.form.setValue({ correo: cuenta.correo, contrasena: CLAVE_DEMO });
+    this.error.set(null);
+  }
 
   protected invalido(campo: 'correo' | 'contrasena'): boolean {
     const control = this.form.controls[campo];

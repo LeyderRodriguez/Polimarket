@@ -31,6 +31,17 @@ describe('Login', () => {
 
   afterEach(() => http.verify());
 
+  it('al elegir una cuenta de demostración llena el correo y la contraseña', async () => {
+    const botones = [...el.querySelectorAll<HTMLButtonElement>('.chip')];
+    expect(botones.length).toBeGreaterThanOrEqual(3);
+
+    botones.find((b) => b.textContent?.includes('Entregas'))!.click();
+    await fixture.whenStable();
+
+    expect(el.querySelector<HTMLInputElement>('#correo')!.value).toBe('entregas@polimarket.test');
+    expect(el.querySelector<HTMLInputElement>('#contrasena')!.value).not.toBe('');
+  });
+
   it('no llama al backend si faltan datos, y lo explica', async () => {
     await enviar();
     fixture.detectChanges();

@@ -5,16 +5,47 @@
   padding: 24px 16px;
 }
 
-form {
-  width: min(380px, 100%);
+.tarjeta {
+  width: min(400px, 100%);
   background: var(--win);
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 26px;
+  display: grid;
+  gap: 18px;
+}
+
+form {
   display: grid;
   gap: 14px;
 }
 
 h1 {
   font-size: 1.35rem;
+}
+
+.demo {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.demo-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.chip {
+  font: 500 12px var(--f-mono);
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--fg);
+  cursor: pointer;
+}
+.chip:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
 }
