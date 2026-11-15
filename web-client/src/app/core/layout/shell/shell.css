@@ -85,7 +85,13 @@ nav a.activo {
   opacity: 0.85;
 }
 
+.derecha {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 .pagina {
+  flex: 1;
   padding: 24px 28px 32px;
   min-width: 0;
   display: grid;

@@ -16,6 +16,7 @@ en la pantalla de inicio de sesión (contraseña de demostración común).
 | Regla: el vendedor necesita aval vigente | Nueva venta | Luis (sin aval) | [09](09-venta-rechazada-sin-aval.png) |
 | RSI-5 · Ventas pendientes de entrega | Entregas | Entregas | [10](10-entregas.png) |
 | Rol que no es de este cliente | Login | RH | [11](11-rol-no-soportado.png) |
+| El cliente solo consume la API: llamadas reales con lo enviado y lo recibido | Modo demostración | Ana | [12](12-modo-demostracion.png) |
 
 ## Qué demuestra cada caso
 
@@ -32,6 +33,6 @@ prueban por Swagger o con los scripts de `scripts/` ([guía](../../guides/client
 
 ## Pruebas automáticas
 
-81 pruebas con Vitest (servicios, guardias, interceptor y componentes) y la compilación de producción limpia:
+94 pruebas con Vitest (servicios, guardias, interceptor y componentes) y la compilación de producción limpia:
 `npm test` y `npm run build` dentro de `web-client/`. Las pruebas de extremo a extremo con Playwright se descartaron: este
 recorrido se hizo en un navegador real contra el backend y queda aquí como evidencia.

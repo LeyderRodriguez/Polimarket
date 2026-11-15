@@ -1,0 +1,55 @@
+<section class="panel-demo" aria-label="Modo demostración: llamadas al backend">
+  <header>
+    <h2>Llamadas al backend <small>(las últimas {{ demo.llamadas().length }})</small></h2>
+    <button type="button" class="btn" (click)="demo.limpiar()" [disabled]="demo.llamadas().length === 0">Limpiar</button>
+  </header>
+
+  <div class="cuerpo">
+    <table>
+      <caption class="solo-lectores">Llamadas hechas al backend, la más reciente primero</caption>
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Método</th>
+          <th>URL</th>
+          <th class="num">Estado</th>
+          <th class="num">ms</th>
+          <th>Código</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (llamada of demo.llamadas(); track llamada.id) {
+          <tr [class.elegida]="elegida()?.id === llamada.id" [class.error]="esError(llamada)">
+            <td>{{ llamada.hora | date: 'HH:mm:ss' }}</td>
+            <td>{{ llamada.metodo }}</td>
+            <td>
+              <button type="button" class="enlace" [attr.aria-expanded]="elegida()?.id === llamada.id" (click)="elegir(llamada)">
+                {{ llamada.url }}
+              </button>
+            </td>
+            <td class="num">{{ llamada.estado ?? '—' }}</td>
+            <td class="num">{{ llamada.duracionMs }}</td>
+            <td>{{ llamada.codigo }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="vacio">Aún no hay llamadas: use cualquier pantalla y aparecerán aquí.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (elegida(); as llamada) {
+      <div class="detalle">
+        <div>
+          <h3>Enviado</h3>
+          <pre>{{ json(llamada.enviado) }}</pre>
+        </div>
+        <div>
+          <h3>Recibido</h3>
+          <pre>{{ json(llamada.recibido) }}</pre>
+        </div>
+      </div>
+    }
+  </div>
+</section>
