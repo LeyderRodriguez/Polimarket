@@ -1,5 +1,6 @@
 <div class="login">
   <div class="tarjeta">
+    <app-aviso-error [error]="errorServidor()" />
     <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
       <div>
         <h1>Iniciar sesión</h1>

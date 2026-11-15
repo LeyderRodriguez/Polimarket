@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import type { ErrorApi } from '../api/tipos';
 import { SesionServicio } from '../auth/sesion.servicio';
 import { iniciarComo, proveedoresDePrueba } from '../testing/ayudas';
-import { aErrorApi } from './errores.interceptor';
+import { aErrorApi } from './error-api';
 
 describe('erroresInterceptor', () => {
   let cliente: HttpClient;

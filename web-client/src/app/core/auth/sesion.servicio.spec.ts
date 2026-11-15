@@ -55,6 +55,36 @@ describe('SesionServicio', () => {
     await restaurando;
 
     expect(sesion.autenticado()).toBe(false);
+    expect(sesion.errorRestauracion()).toBeNull(); // no tener sesión es lo normal, no un fallo
+  });
+
+  it('avisa que el backend no responde si falla al restaurar, y el aviso se va al iniciar sesión', async () => {
+    const restaurando = sesion.restaurar();
+    http.expectOne('/api/auth/me').error(new ProgressEvent('error'));
+    await restaurando;
+
+    expect(sesion.autenticado()).toBe(false);
+    expect(sesion.errorRestauracion()).toMatchObject({ codigo: 'SIN_CONEXION' });
+
+    const entrada = sesion.iniciarSesion('ana@polimarket.test', 'clave');
+    http.expectOne('/api/auth/login').flush({ id: 4, nombre: 'Ana Pérez', rol: 'VENDEDOR' });
+    await entrada;
+    expect(sesion.errorRestauracion()).toBeNull();
+  });
+
+  it('deja de esperar al backend a los 5 segundos y lo avisa', async () => {
+    vi.useFakeTimers();
+    try {
+      const restaurando = sesion.restaurar();
+      await vi.advanceTimersByTimeAsync(5000);
+      await restaurando;
+    } finally {
+      vi.useRealTimers();
+    }
+    http.expectOne('/api/auth/me'); // la petición quedó cancelada
+
+    expect(sesion.autenticado()).toBe(false);
+    expect(sesion.errorRestauracion()).toMatchObject({ codigo: 'SIN_RESPUESTA' });
   });
 
   it('cierra la sesión local aunque el servidor no responda, y vuelve al login', async () => {

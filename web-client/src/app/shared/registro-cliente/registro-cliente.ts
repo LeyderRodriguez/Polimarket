@@ -4,8 +4,9 @@ import { firstValueFrom } from 'rxjs';
 import { ClientesApi } from '../../core/api/clientes.api';
 import { TercerosApi } from '../../core/api/terceros.api';
 import type { Cliente, ErrorApi, SolicitudTercero, Tercero, TipoPersona } from '../../core/api/tipos';
-import { aErrorApi } from '../../core/http/errores.interceptor';
+import { aErrorApi } from '../../core/http/error-api';
 import { AvisoError } from '../aviso-error/aviso-error';
+import { TrampaFoco } from '../trampa-foco/trampa-foco';
 
 type Fase = 'buscar' | 'datos' | 'preferencias';
 
@@ -20,7 +21,7 @@ export function nombreDe(tercero: Tercero): string {
  */
 @Component({
   selector: 'app-registro-cliente',
-  imports: [ReactiveFormsModule, AvisoError],
+  imports: [ReactiveFormsModule, AvisoError, TrampaFoco],
   templateUrl: './registro-cliente.html',
   styleUrl: './registro-cliente.css',
   host: { '(document:keydown.escape)': 'cerrar()' },

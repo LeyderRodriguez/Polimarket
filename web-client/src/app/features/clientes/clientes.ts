@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ClientesApi } from '../../core/api/clientes.api';
 import type { Cliente, ErrorApi } from '../../core/api/tipos';
-import { aErrorApi } from '../../core/http/errores.interceptor';
+import { aErrorApi } from '../../core/http/error-api';
 import { AvisoError } from '../../shared/aviso-error/aviso-error';
 import { RegistroCliente } from '../../shared/registro-cliente/registro-cliente';
 

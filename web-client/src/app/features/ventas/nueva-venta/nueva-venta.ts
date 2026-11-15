@@ -5,7 +5,7 @@ import { ProductosApi } from '../../../core/api/productos.api';
 import type { Cliente, ErrorApi, ProductoDisponible, Venta } from '../../../core/api/tipos';
 import { VentasApi } from '../../../core/api/ventas.api';
 import { pesos } from '../../../core/formato';
-import { aErrorApi } from '../../../core/http/errores.interceptor';
+import { aErrorApi } from '../../../core/http/error-api';
 import { AvisoError } from '../../../shared/aviso-error/aviso-error';
 import { RegistroCliente } from '../../../shared/registro-cliente/registro-cliente';
 

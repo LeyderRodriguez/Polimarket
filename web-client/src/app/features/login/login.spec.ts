@@ -1,6 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { SesionServicio } from '../../core/auth/sesion.servicio';
 import { esperarTurno, proveedoresDePrueba } from '../../core/testing/ayudas';
 import { Login } from './login';
 
@@ -28,6 +29,15 @@ describe('Login', () => {
   });
 
   afterEach(() => http.verify());
+
+  it('avisa que el backend no responde si no se pudo comprobar la sesión al abrir la página', async () => {
+    const restaurando = TestBed.inject(SesionServicio).restaurar();
+    http.expectOne('/api/auth/me').error(new ProgressEvent('error'));
+    await restaurando;
+    fixture.detectChanges();
+
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain('SIN_CONEXION');
+  });
 
   it('al elegir una cuenta de demostración llena el correo y la contraseña', async () => {
     const botones = [...el.querySelectorAll<HTMLButtonElement>('.chip')];

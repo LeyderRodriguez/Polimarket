@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import type { ErrorApi } from '../../core/api/tipos';
 import { inicioDe } from '../../core/auth/inicio';
 import { SesionServicio } from '../../core/auth/sesion.servicio';
-import { aErrorApi } from '../../core/http/errores.interceptor';
+import { aErrorApi } from '../../core/http/error-api';
 import { AvisoError } from '../../shared/aviso-error/aviso-error';
 import { CLAVE_DEMO, CUENTAS_DEMO, type CuentaDemo } from './cuentas-demo';
 
@@ -26,6 +26,8 @@ export class Login {
   protected readonly error = signal<ErrorApi | null>(null);
 
   protected readonly cuentasDemo = CUENTAS_DEMO;
+  /** Si el backend no respondió al abrir la página, se dice aquí en vez de mostrar un login que parece normal. */
+  protected readonly errorServidor = this.sesion.errorRestauracion;
 
   protected usarCuenta(cuenta: CuentaDemo): void {
     this.form.setValue({ correo: cuenta.correo, contrasena: CLAVE_DEMO });

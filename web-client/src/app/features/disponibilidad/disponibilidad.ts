@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { ProductosApi } from '../../core/api/productos.api';
 import type { ErrorApi, ProductoDisponible } from '../../core/api/tipos';
 import { normalizar, pesos } from '../../core/formato';
-import { aErrorApi } from '../../core/http/errores.interceptor';
+import { aErrorApi } from '../../core/http/error-api';
 import { AvisoError } from '../../shared/aviso-error/aviso-error';
 
 /** RSI-2: el vendedor consulta qué hay disponible antes de vender. Todo viene del backend; aquí solo se muestra y se filtra. */
