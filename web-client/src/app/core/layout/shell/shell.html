@@ -15,10 +15,14 @@
 
     @if (usuario(); as persona) {
       <div class="usuario">
-        <b>{{ persona.nombre }}</b>
-        Rol {{ etiquetaRol() }}
-        <app-selector-tema />
-        <button type="button" (click)="salir()">Cerrar sesión</button>
+        <div class="persona">
+          <b>{{ persona.nombre }}</b>
+          <span>Rol {{ etiquetaRol() }}</span>
+        </div>
+        <div class="acciones-usuario">
+          <app-selector-tema />
+          <button type="button" (click)="salir()">Cerrar sesión</button>
+        </div>
       </div>
     }
   </aside>

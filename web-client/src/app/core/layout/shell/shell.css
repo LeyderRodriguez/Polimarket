@@ -52,8 +52,19 @@ nav a.activo {
 .usuario {
   margin-top: auto;
   border-top: 1px solid var(--side-on);
-  padding: 12px 10px 0;
+  padding: 18px 10px 6px;
   font-size: 12.5px;
+  display: grid;
+  gap: 18px;
+}
+.persona {
+  display: grid;
+  gap: 3px;
+}
+.acciones-usuario {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
 }
 .usuario b {
   display: block;
@@ -61,13 +72,8 @@ nav a.activo {
   font-weight: 500;
   overflow-wrap: anywhere;
 }
-.usuario app-selector-tema {
-  display: block;
-  margin-top: 10px;
-}
 .usuario button {
   display: block;
-  margin-top: 8px;
   padding: 0;
   border: 0;
   background: none;
@@ -111,6 +117,14 @@ nav a.activo {
     margin: 0 0 0 auto;
     border: 0;
     padding: 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .acciones-usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   .pagina {
     padding: 18px 14px;
