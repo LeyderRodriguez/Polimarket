@@ -1,0 +1,50 @@
+<section class="pantalla">
+  <div class="cabecera">
+    <div>
+      <h2>Entregas pendientes</h2>
+      <p class="sub">Qué entregar, a quién y dónde. Al despachar se descuenta el stock una sola vez.</p>
+    </div>
+    <div class="herramientas">
+      <button type="button" class="btn" (click)="cargar()" [disabled]="cargando()">Actualizar</button>
+    </div>
+  </div>
+
+  @if (aviso(); as mensaje) {
+    <div class="banner ok" role="status">{{ mensaje }}</div>
+  }
+  <app-aviso-error [error]="errorCarga()" />
+  <app-aviso-error [error]="errorAccion()" />
+
+  <div class="tarjetas">
+    @for (venta of pendientes(); track venta.ventaId) {
+      <article class="panel">
+        <header class="encabezado">
+          <h3>Venta #{{ venta.ventaId }}</h3>
+          <span class="etiqueta warn">Pendiente</span>
+        </header>
+        <div>
+          <b>{{ venta.cliente }}</b>
+          <div class="sub">{{ venta.direccionEntrega }}</div>
+        </div>
+        <ul>
+          @for (producto of venta.productos; track producto.productoId) {
+            <li>{{ producto.cantidad }} × {{ producto.nombre }}</li>
+          }
+        </ul>
+        <div class="acciones">
+          <app-accion-confirmada
+            texto="Despachar"
+            [pregunta]="'¿Despachar la venta #' + venta.ventaId + '? Se descuenta el stock.'"
+            textoConfirmar="Sí, despachar"
+            [deshabilitado]="despachando()"
+            (confirmada)="despachar(venta.ventaId)"
+          />
+        </div>
+      </article>
+    } @empty {
+      <p class="sub">
+        {{ cargando() ? 'Cargando…' : errorCarga() ? 'No se pudieron cargar las entregas.' : 'No hay entregas pendientes.' }}
+      </p>
+    }
+  </div>
+</section>

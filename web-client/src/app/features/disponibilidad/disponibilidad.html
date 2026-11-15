@@ -1,0 +1,60 @@
+<section class="pantalla">
+  <div class="cabecera">
+    <div>
+      <h2>Disponibilidad</h2>
+      <p class="sub">Disponible = stock físico − unidades reservadas por ventas pendientes.</p>
+    </div>
+    <div class="herramientas">
+      <input
+        type="search"
+        aria-label="Buscar producto"
+        placeholder="Buscar producto"
+        [value]="busqueda()"
+        (input)="buscar($event)"
+      />
+      <button type="button" class="btn" (click)="cargar()" [disabled]="cargando()">Actualizar</button>
+    </div>
+  </div>
+
+  <app-aviso-error [error]="error()" />
+
+  <div class="tabla">
+    <table>
+      <caption class="solo-lectores">Productos con su stock físico, reservado y disponible</caption>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th class="num">Precio</th>
+          <th class="num">Físico</th>
+          <th class="num">Reservado</th>
+          <th class="num">Disponible</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (producto of filtrados(); track producto.id) {
+          <tr>
+            <td class="codigo">{{ producto.codigo }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td class="num">{{ pesos(producto.precio) }}</td>
+            <td class="num">{{ producto.stockFisico }}</td>
+            <td class="num">{{ producto.cantidadReservada }}</td>
+            <td class="num">{{ producto.cantidadDisponible }}</td>
+            <td>
+              @if (producto.cantidadDisponible > 0) {
+                <span class="etiqueta ok">Disponible</span>
+              } @else {
+                <span class="etiqueta bad">Agotado</span>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="vacio">{{ mensajeVacio() }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
