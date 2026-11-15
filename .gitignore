@@ -1,0 +1,9 @@
+# IDE y Sistema Operativo globales
+.vscode/
+.idea/
+.vs/
+*.suo
+*.user
+Thumbs.db
+.DS_Store
+
