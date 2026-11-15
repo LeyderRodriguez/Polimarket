@@ -1,7 +1,9 @@
 package polimarket.proveedores.api;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -24,4 +26,7 @@ public interface IProveedores {
 
     /** Proveedores que suministran el producto con ese código. */
     List<ProveedorDto> consultarPorProducto(String codigoProducto);
+
+    /** Proveedores de varios productos en pocas consultas: código de producto → sus proveedores. */
+    Map<String, List<ProveedorDto>> consultarPorProductos(Collection<String> codigosProducto);
 }

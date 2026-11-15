@@ -1,5 +1,7 @@
 package polimarket.proveedores.aplicacion;
 
+import static polimarket.compartido.Textos.limpiar;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
@@ -94,6 +96,21 @@ class ProveedoresService implements IProveedores {
         return aDtos(proveedores.findAllById(ids));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, List<ProveedorDto>> consultarPorProductos(Collection<String> codigosProducto) {
+        if (codigosProducto.isEmpty()) {
+            return Map.of();
+        }
+        List<ProductoSuministrado> suministros = suministrados
+                .findByCodigoProductoIn(codigosProducto.stream().map(c -> c.trim().toUpperCase()).toList());
+        Map<Long, ProveedorDto> proveedoresPorId = aDtos(proveedores.findAllById(
+                suministros.stream().map(ProductoSuministrado::getProveedorId).distinct().toList())).stream()
+                .collect(Collectors.toMap(ProveedorDto::id, Function.identity()));
+        return suministros.stream().collect(Collectors.groupingBy(ProductoSuministrado::getCodigoProducto,
+                Collectors.mapping(s -> proveedoresPorId.get(s.getProveedorId()), Collectors.toList())));
+    }
+
     private Proveedor exigir(long proveedorId) {
         return proveedores.findById(proveedorId)
                 .orElseThrow(() -> ExcepcionNegocio.noEncontrado("No se encontró el proveedor."));
@@ -107,9 +124,5 @@ class ProveedoresService implements IProveedores {
                 .map(p -> new ProveedorDto(p.getId(), p.getTerceroId(), porId.get(p.getTerceroId()).nombreCompleto(),
                         p.getNombreContacto(), p.getTelefonoContacto()))
                 .toList();
-    }
-
-    private static String limpiar(String s) {
-        return s == null || s.isBlank() ? null : s.trim();
     }
 }

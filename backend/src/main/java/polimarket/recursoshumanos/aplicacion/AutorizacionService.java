@@ -60,7 +60,8 @@ class AutorizacionService implements IAutorizacion {
     }
 
     private AvalDto resolver(long vendedorId, EstadoAval destino, long responsableTerceroId, String observacion) {
-        exigirVendedor(vendedorId);
+        // Se bloquea al vendedor antes de leer su último aval: así dos resoluciones simultáneas no se pisan.
+        vendedores.bloquear(vendedorId).orElseThrow(() -> ExcepcionNegocio.noEncontrado("No se encontró el vendedor."));
         Empleado responsable = empleados.findByTerceroId(responsableTerceroId)
                 .filter(e -> e.getEstado() == EstadoEmpleado.ACTIVO)
                 .orElseThrow(() -> ExcepcionNegocio.sinPermiso("SIN_PERMISO",

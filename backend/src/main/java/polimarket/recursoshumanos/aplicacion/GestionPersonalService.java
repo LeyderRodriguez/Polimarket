@@ -58,7 +58,7 @@ class GestionPersonalService implements IGestionPersonal {
         Vendedor vendedor = vendedores.save(new Vendedor(empleado.getId(), zona));
         avales.save(AvalRH.solicitar(vendedor.getId(), Instant.now(reloj)));
         terceros.asignarRol(terceroId, TipoRolTercero.VENDEDOR);
-        return aDto(vendedor, empleado, terceros.consultarPorId(terceroId).orElseThrow());
+        return aDto(vendedor, empleado, terceros.consultarPorId(terceroId).orElseThrow(), EstadoAval.PENDIENTE);
     }
 
     @Override
@@ -70,10 +70,14 @@ class GestionPersonalService implements IGestionPersonal {
         Map<Long, TerceroDto> tercerosPorId = terceros
                 .consultarPorIds(empleadosPorId.values().stream().map(Empleado::getTerceroId).toList())
                 .stream().collect(Collectors.toMap(TerceroDto::id, Function.identity()));
+        // Un solo query trae el último aval de todos los vendedores, en vez de uno por vendedor.
+        Map<Long, EstadoAval> estados = avales.ultimosDe(todos.stream().map(Vendedor::getId).toList()).stream()
+                .collect(Collectors.toMap(AvalRH::getVendedorId, AvalRH::getEstado));
         return todos.stream()
                 .map(v -> {
                     Empleado e = empleadosPorId.get(v.getEmpleadoId());
-                    return aDto(v, e, tercerosPorId.get(e.getTerceroId()));
+                    return aDto(v, e, tercerosPorId.get(e.getTerceroId()),
+                            estados.getOrDefault(v.getId(), EstadoAval.PENDIENTE));
                 })
                 .toList();
     }
@@ -104,12 +108,12 @@ class GestionPersonalService implements IGestionPersonal {
 
     private VendedorDto completar(Vendedor v) {
         Empleado e = empleados.findById(v.getEmpleadoId()).orElseThrow();
-        return aDto(v, e, terceros.consultarPorId(e.getTerceroId()).orElseThrow());
-    }
-
-    private VendedorDto aDto(Vendedor v, Empleado e, TerceroDto t) {
         EstadoAval estado = avales.findFirstByVendedorIdOrderByIdDesc(v.getId())
                 .map(AvalRH::getEstado).orElse(EstadoAval.PENDIENTE);
+        return aDto(v, e, terceros.consultarPorId(e.getTerceroId()).orElseThrow(), estado);
+    }
+
+    private static VendedorDto aDto(Vendedor v, Empleado e, TerceroDto t, EstadoAval estado) {
         return new VendedorDto(v.getId(), e.getTerceroId(), t.nombreCompleto(), v.getCodigo(), v.getZona(), estado);
     }
 

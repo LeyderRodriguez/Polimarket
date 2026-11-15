@@ -1,5 +1,7 @@
 package polimarket.bodega.aplicacion;
 
+import static polimarket.compartido.Textos.limpiar;
+import static polimarket.compartido.Textos.vacio;
 import static polimarket.bodega.dominio.Existencia.BODEGA_PRINCIPAL;
 
 import java.math.BigDecimal;
@@ -207,13 +209,18 @@ class InventarioService implements IInventario {
     public List<BajoStockDto> listarBajoStock() {
         Map<Long, Existencia> existenciaPorProducto = existenciasPorProducto();
         Map<Long, Integer> reservado = reservadoPorProducto();
-        return productos.findByActivoTrueOrderByNombre().stream()
+        List<Producto> escasos = productos.findByActivoTrueOrderByNombre().stream()
                 .filter(p -> existenciaPorProducto.get(p.getId()).bajoStock(reservado.getOrDefault(p.getId(), 0)))
+                .toList();
+        // Los proveedores de todos los productos escasos se piden juntos, no uno por producto.
+        Map<String, List<polimarket.proveedores.api.ProveedorDto>> proveedoresPorCodigo =
+                proveedores.consultarPorProductos(escasos.stream().map(Producto::getCodigo).toList());
+        return escasos.stream()
                 .map(p -> {
                     Existencia e = existenciaPorProducto.get(p.getId());
                     int res = reservado.getOrDefault(p.getId(), 0);
-                    List<BajoStockDto.Proveedor> quienes = proveedores.consultarPorProducto(p.getCodigo()).stream()
-                            .map(pr -> new BajoStockDto.Proveedor(pr.id(), pr.nombre())).toList();
+                    List<BajoStockDto.Proveedor> quienes = proveedoresPorCodigo.getOrDefault(p.getCodigo(), List.of())
+                            .stream().map(pr -> new BajoStockDto.Proveedor(pr.id(), pr.nombre())).toList();
                     return new BajoStockDto(p.getId(), p.getNombre(), e.getCantidad(), res, e.disponible(res),
                             e.getStockMinimo(), quienes);
                 })
@@ -310,13 +317,5 @@ class InventarioService implements IInventario {
     private static MovimientoDto aDto(MovimientoInventario m) {
         return new MovimientoDto(m.getId(), m.getProductoId(), m.getTipo(), m.getCantidad(), m.getCantidadAnterior(),
                 m.getCantidadNueva());
-    }
-
-    private static boolean vacio(String s) {
-        return s == null || s.isBlank();
-    }
-
-    private static String limpiar(String s) {
-        return vacio(s) ? null : s.trim();
     }
 }

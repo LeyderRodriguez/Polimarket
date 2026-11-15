@@ -1,6 +1,13 @@
 package polimarket.fachada;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,6 +19,8 @@ import polimarket.compartido.ExcepcionNegocio;
 /** Traduce los errores a la respuesta común {codigo, mensaje} con el estado HTTP que corresponde. */
 @RestControllerAdvice
 class ManejadorErrores {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ManejadorErrores.class);
 
     record ErrorApi(String codigo, String mensaje) {
     }
@@ -40,6 +49,44 @@ class ManejadorErrores {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     ResponseEntity<ErrorApi> cuerpoIlegible(HttpMessageNotReadableException e) {
         return ResponseEntity.badRequest().body(new ErrorApi("DATOS_INVALIDOS", "El cuerpo de la solicitud no es válido."));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    ResponseEntity<ErrorApi> parametroFaltante(MissingServletRequestParameterException e) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorApi("DATOS_INVALIDOS", "Falta el parámetro '" + e.getParameterName() + "'."));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    ResponseEntity<ErrorApi> tipoIncorrecto(MethodArgumentTypeMismatchException e) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorApi("DATOS_INVALIDOS", "El valor de '" + e.getName() + "' no es válido."));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    ResponseEntity<ErrorApi> metodoNoPermitido(HttpRequestMethodNotSupportedException e) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new ErrorApi("METODO_NO_PERMITIDO", "Ese método no está disponible en esta ruta."));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    ResponseEntity<ErrorApi> rutaInexistente(NoResourceFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorApi("NO_ENCONTRADO", "La ruta no existe."));
+    }
+
+    /** Los permisos por rol se aplican con @PreAuthorize dentro del controller; aquí se les da el formato común. */
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<ErrorApi> sinPermiso(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorApi("SIN_PERMISO", "No tiene permiso para esta acción."));
+    }
+
+    /** Último recurso: nunca se devuelve el detalle interno; queda en el registro del servidor. */
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<ErrorApi> inesperado(Exception e) {
+        LOG.error("Error inesperado", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorApi("ERROR_INTERNO", "Ocurrió un error inesperado."));
     }
 
     /** Red de seguridad: una restricción única de la base que se violó por una carrera entre dos solicitudes. */

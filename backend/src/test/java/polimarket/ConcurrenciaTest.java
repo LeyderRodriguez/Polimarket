@@ -100,6 +100,26 @@ class ConcurrenciaTest {
     }
 
     @Test
+    void cincoAprobacionesSimultaneasDelMismoAvalSoloUnaGana() throws Exception {
+        TerceroDto rh = persona("RH");
+        personal.registrarEmpleado(rh.id(), "Recursos Humanos");
+        long vendedorId = personal.registrarVendedor(persona("Vendedor").id(), null).id(); // aval PENDIENTE
+
+        List<Callable<String>> tareas = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            tareas.add(() -> intentar(() -> autorizacion.aprobar(vendedorId, rh.id(), null)));
+        }
+        List<String> resultados = ejecutarALaVez(tareas);
+
+        assertThat(resultados.stream().filter("OK"::equals)).hasSize(1);
+        assertThat(resultados.stream().filter("ESTADO_INVALIDO"::equals)).hasSize(4);
+        assertThat(autorizacion.estaAutorizado(vendedorId)).isTrue();
+        Integer avales = jdbc.queryForObject("select count(*) from recursos_humanos.aval_rh where vendedor_id = ?",
+                Integer.class, vendedorId);
+        assertThat(avales).isEqualTo(1); // no se duplicó el historial
+    }
+
+    @Test
     void unaVentaQueFallaPorStockNoDejaNiVentaNiReservasGuardadas() {
         ProductoDto abundante = productoConStock(10);
         ProductoDto escaso = productoConStock(2);

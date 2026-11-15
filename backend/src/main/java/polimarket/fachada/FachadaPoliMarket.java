@@ -93,7 +93,17 @@ public class FachadaPoliMarket {
     public TerceroDto buscarTercero(UsuarioSesion usuario, String tipoDocumento, String numeroDocumento) {
         exigirAvalSiEsVendedor(usuario);
         return terceros.consultarPorDocumento(tipoDocumento, numeroDocumento)
+                .map(t -> usuario.getRol() == RolUsuario.VENDEDOR ? sinContacto(t) : t)
                 .orElseThrow(() -> ExcepcionNegocio.noEncontrado("No se encontró el tercero."));
+    }
+
+    /**
+     * Un vendedor busca por documento solo para no duplicar a un cliente: ve quién es, no sus datos de contacto
+     * (que pueden ser de un empleado o un proveedor). Recursos Humanos sí ve el registro completo.
+     */
+    private static TerceroDto sinContacto(TerceroDto t) {
+        return new TerceroDto(t.id(), t.tipo(), t.tipoDocumento(), t.numeroDocumento(), t.nombres(), t.apellidos(),
+                t.razonSocial(), null, null, null);
     }
 
     @Transactional

@@ -1,5 +1,8 @@
 package polimarket.terceros.aplicacion;
 
+import static polimarket.compartido.Textos.limpiar;
+import static polimarket.compartido.Textos.vacio;
+
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -102,14 +105,6 @@ class TercerosService implements ITerceros {
         if (n.tipo() == TipoTercero.JURIDICA && vacio(n.razonSocial())) {
             throw ExcepcionNegocio.datosInvalidos("Una persona jurídica requiere razón social.");
         }
-    }
-
-    private static boolean vacio(String s) {
-        return s == null || s.isBlank();
-    }
-
-    private static String limpiar(String s) {
-        return vacio(s) ? null : s.trim();
     }
 
     private static TerceroDto aDto(Tercero t) {

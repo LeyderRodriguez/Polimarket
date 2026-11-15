@@ -1,5 +1,6 @@
 package polimarket.proveedores.dominio;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,4 +9,6 @@ public interface ProductoSuministradoRepositorio extends JpaRepository<ProductoS
     boolean existsByProveedorIdAndCodigoProducto(Long proveedorId, String codigoProducto);
 
     List<ProductoSuministrado> findByCodigoProducto(String codigoProducto);
+
+    List<ProductoSuministrado> findByCodigoProductoIn(Collection<String> codigosProducto);
 }

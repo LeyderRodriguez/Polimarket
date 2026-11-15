@@ -159,6 +159,46 @@ class CuentasYAvalApiTest extends BaseApiTest {
     }
 
     @Test
+    void unVendedorVeQuienEsUnTerceroPeroNoSusDatosDeContacto() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+        TerceroDto objetivo = terceros.registrar(new polimarket.terceros.api.NuevoTercero(
+                polimarket.terceros.api.TipoTercero.NATURAL, "CC", "777000111", "Pedro", "Gil", null, "3001234567",
+                "pedro@privado.test", "Calle privada 1"));
+        MvcResult cuenta = crearCuentaPorApi(rh, "Vero", "VENDEDOR");
+        mvc.perform(post("/api/vendedores/" + leerId(cuenta, "$.vendedorId") + "/aval/aprobar").session(rh).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isOk());
+        MockHttpSession vendedor = iniciarSesion(correoDe("vero", leerId(cuenta, "$.terceroId")));
+
+        mvc.perform(get("/api/terceros").session(vendedor).param("tipoDocumento", "CC").param("numeroDocumento", "777000111"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombres").value("Pedro"))
+                .andExpect(jsonPath("$.telefono").doesNotExist())
+                .andExpect(jsonPath("$.correo").doesNotExist())
+                .andExpect(jsonPath("$.direccion").doesNotExist());
+
+        mvc.perform(get("/api/terceros").session(rh).param("tipoDocumento", "CC").param("numeroDocumento", "777000111"))
+                .andExpect(jsonPath("$.telefono").value("3001234567")); // RH sí ve el registro completo
+    }
+
+    @Test
+    void losErroresDeUsoTambienSiguenElFormatoComun() throws Exception {
+        MockHttpSession rh = iniciarSesion(correoRh);
+
+        mvc.perform(get("/api/terceros").session(rh))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("DATOS_INVALIDOS"));
+        mvc.perform(get("/api/vendedores/abc/autorizacion").session(rh))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("DATOS_INVALIDOS"));
+        mvc.perform(get("/api/ruta-que-no-existe").session(rh))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.codigo").value("NO_ENCONTRADO"));
+        mvc.perform(post("/api/vendedores/1/autorizacion").session(rh).with(csrf()))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.codigo").value("METODO_NO_PERMITIDO"));
+    }
+
+    @Test
     void rhListaLasCuentasSinContrasenaNiHash() throws Exception {
         MockHttpSession rh = iniciarSesion(correoRh);
 
