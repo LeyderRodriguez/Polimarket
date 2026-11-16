@@ -9,8 +9,8 @@ Backend en Java con Spring Boot organizado por componentes de negocio (Seguridad
 | Carpeta | Contenido |
 |---|---|
 | `backend/` | Java 25, Spring Boot 4.1.2, Maven. Un paquete por componente. |
-| `web-client/` | Cliente Angular (Ventas y Entregas). Estructura base y contrato de la API. |
-| `desktop-client/` | Cliente C++ (Bodega y Recursos Humanos). Estructura base y contrato de la API. |
+| `web-client/` | Cliente Angular (Ventas y Entregas). |
+| `desktop-client/` | Cliente C++ / Qt 6 (Bodega y Recursos Humanos). |
 | `docs/` | Guía para los clientes, API REST, alcance, esquemas de la base y diagramas PlantUML. |
 | `scripts/` | Recorridos manuales con `curl` para probar la API en marcha. |
 
