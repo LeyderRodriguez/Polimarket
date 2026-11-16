@@ -1,0 +1,11 @@
+build/
+cmake-build-*/
+out/
+.vs/
+.vscode/
+.idea/
+*.user
+CMakeLists.txt.user*
+*.o
+*.obj
+*.exe
