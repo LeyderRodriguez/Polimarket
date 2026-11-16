@@ -3,7 +3,7 @@
 Cliente de escritorio de PoliMarket para los usuarios de **Recursos Humanos** y **Bodega**. Solo habla con la
 API HTTP de `../backend` (la `FachadaPoliMarket`), nunca con la base de datos.
 
-![Inventario](docs/capturas/06_bodega_inventario.png)
+![Inventario](../docs/evidence/desktop-client/06_bodega_inventario.png)
 
 ## Pantallas y llamadas a la API
 
@@ -19,7 +19,7 @@ API HTTP de `../backend` (la `FachadaPoliMarket`), nunca con la base de datos.
 | Bodega | Registrar entrada | `GET /api/proveedores` · `GET /api/productos` → `POST /api/inventario/entradas` (una por producto) |
 
 Las cuentas `VENDEDOR` y `ENTREGAS` no entran a este cliente: el login les indica que usen el cliente web.
-Capturas de todas las pantallas en [`docs/capturas`](docs/capturas).
+Capturas de todas las pantallas en [`docs/evidence/desktop-client`](../docs/evidence/desktop-client).
 
 ## Cómo cumple el contrato del backend
 

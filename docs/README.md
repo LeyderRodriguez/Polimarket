@@ -6,7 +6,7 @@ Organizada según para qué abres el documento (idea tomada de [Diátaxis](https
 |---|---|---|
 | [`guides/`](guides/) | **Hacer algo** paso a paso | [clients.md](guides/clients.md): levantar el backend, sesión, CSRF y qué pantalla llama a qué |
 | [`reference/`](reference/) | **Consultar** un dato exacto | [api-rest.md](reference/api-rest.md): todos los endpoints · [database.md](reference/database.md): esquemas, tablas y migraciones |
-| [`evidence/`](evidence/) | **Comprobar** que funciona | [web-client/](evidence/web-client/README.md): recorrido con capturas del cliente web |
+| [`evidence/`](evidence/) | **Comprobar** que funciona | [web-client/](evidence/web-client/README.md): recorrido con capturas del cliente web · [desktop-client/](evidence/desktop-client/): capturas del cliente de escritorio |
 | [`architecture/`](architecture/) | **Entender** por qué es así | [scope.md](architecture/scope.md): alcance, componentes, roles y reglas · [web-client-plan.md](architecture/web-client-plan.md): alcance y fases del cliente web · [diagrams/](architecture/diagrams/): PlantUML de clases y componentes |
 
 ## Según quién seas
