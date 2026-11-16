@@ -84,7 +84,6 @@ oculte o muestre es solo comodidad.
 
 | Fuera de alcance | Por qué |
 |---|---|
-| El cliente de escritorio (C++) | Lo desarrolla el resto del grupo; el contrato está en esta carpeta |
 | Cambio de contraseña (RF-25) | No está entre los requisitos seleccionados |
 | Estados de entrega `ENTREGADA` y `FALLIDA` | Se registra el despacho; confirmar la recepción es una ampliación |
 | Varias bodegas | El prototipo usa una sola |
@@ -94,6 +93,9 @@ oculte o muestre es solo comodidad.
 
 El cliente web (Angular) sí está hecho: vive en [`web-client/`](../../web-client/) y consume Disponibilidad, Clientes,
 Nueva venta, Mis ventas y Entregas (RSI-2, RSI-3, RSI-5 y RSI-6). Su plan está en [web-client-plan.md](web-client-plan.md).
+
+El cliente de escritorio (C++ / Qt 6) también está hecho: vive en [`desktop-client/`](../../desktop-client/) y cubre Recursos Humanos
+(avales, crear cuentas, desactivar, consultar autorización: RSI-1) y Bodega (inventario, bajo stock, entradas: RSI-4). Falta la pantalla de ajustes de inventario. Capturas en [evidence/desktop-client](../evidence/desktop-client/).
 
 ## Cambios frente al documento del grupo
 
